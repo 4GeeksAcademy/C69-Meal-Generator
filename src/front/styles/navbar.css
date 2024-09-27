@@ -1,7 +1,16 @@
 .navbar a {
     text-decoration: none;
+    color: antiquewhite;
+}
+
+.navbar {
+    background-color: #002837;
 }
 
 .login {
     text-align: end;
+}
+
+.towaLogo {
+    height: 5vh;
 }
