@@ -23,7 +23,7 @@ class User(db.Model):
 
 class Menu(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=DateTime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=func.now())
     type = db.Column(db.String(120), unique=True, nullable=False)
 
     def __repr__(self):
