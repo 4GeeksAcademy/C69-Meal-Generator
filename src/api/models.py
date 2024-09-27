@@ -17,7 +17,6 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
-            # do not serialize the password, its a security breach
         }
     
 
@@ -61,7 +60,56 @@ class MenuAvailability(db.Model):
             "menu_id": self.menu_id,
         }
     
-    # class Dish(db.Model):
-    #     __tablename__ = "dish"
+    class Dish(db.Model):
+        __tablename__ = "dish"
 
-    #     id = db.Column(db.Integer, primary_key=True)
+        id = db.Column(db.Integer, primary_key=True)
+        menu_id = db.Column(db.Integer,db.ForeignKey('menu.id'))
+        name = db.Column(db.String(120), unique=True, nullable=False)
+        created_at = db.Column(db.DateTime, nullable=False, default=func.now())
+
+        def __repr__(self):
+            return f'<Dish {self.type}:>'
+        
+        def serialize(self):
+            return {
+            "id": self.id,
+            "menu_id": self.menu_id,
+            "name": self.name,
+            "created_at": self.created_at,
+        }
+
+class Ingredient(db.Model):
+    __tablename__ = "ingredient"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    calories = db.Column(db.Float(precision=2),unique=True, nullable=False)
+
+    def __repr__(self):
+            return f'<Ingredient {self.type}:>'
+    
+    def serialize(self):
+            return {
+            "id": self.id,
+            "name": self.name,
+            "calories": self.calories,
+        }
+    
+class DishIngredient(db.Model):
+    
+    __tablename__ = "dish_ingredient"
+
+    id = db.Column(db.Integer, primary_key=True)
+    dish_id = db.Column(db.Integer,db.ForeignKey('dish.id'))
+    ingredient_id = db.Column(db.Integer,db.ForeignKey('ingredient.id'))
+
+    def __repr__(self):
+            return f'<DishIngredient {self.type}:>'
+    
+    def serialize(self):
+            return {
+            "id": self.id,
+            "dish_id": self.dish_id,
+            "ingredient_id": self.ingredient_id,
+        }
