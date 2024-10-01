@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, Menu, Dish, Ingredient, DishIngredient, Restriction, Preference
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -13,6 +13,47 @@ api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
+
+@api.route('/user', methods=['GET'])
+def get_users():
+
+    users = User.query.all()
+
+    return jsonify([user.serialize() for user in users]), 200.
+
+
+@api.route('/menu', methods=['GET'])
+def get_the_menu():
+
+    food = Menu.query.all()
+
+    return jsonify([menu.serialize() for menu in food]), 200.
+
+@api.route('/dish', methods=['GET'])
+def get_the_dish():
+
+    plate = Dish.query.all()
+
+    return jsonify([dish.serialize()for dish in plate]), 200.
+
+@api.route('/ingredient', methods=['GET'])
+def get_the_ingredient():
+
+    ingredients = Ingredient.query.all()
+
+    return jsonify([ingredient.seralize()for ingredient in ingredients]), 200.
+
+@api.route('/menu/<int:menu_id>/availability', methods=['GET'])
+def get_menu_availability(menu_id):
+
+    menu = Menu.query.get(menu_id)
+    if menu is None:
+        return jsonify({"error": "menu not found"}), 404
+    
+    availability = menu.availability
+
+    return jsonify([i.seralize()for i in availability ]), 200.
+    
 
 
 @api.route('/sign-up', methods=['POST'])
