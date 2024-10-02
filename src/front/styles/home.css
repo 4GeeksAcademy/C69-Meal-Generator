@@ -5,3 +5,22 @@
     one more css for each page that will contain the selected used 
     on that page only (the ones not reused in other pages).
 */
+.toggle-menu-buttons {
+    gap: 10rem;
+    padding-top: 10rem;
+}
+
+.btn-outline-light {
+    border-color: antiquewhite;
+    color: antiquewhite;
+}
+
+.btn-outline-light:hover {
+    background-color: antiquewhite;
+}
+
+.placeholder-for-menu {
+    color: bisque;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
