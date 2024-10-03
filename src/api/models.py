@@ -30,6 +30,7 @@ class Menu(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=func.now())
     type = db.Column(db.String(120), unique=True, nullable=False)
     availability = db.relationship('MenuAvailability')
+    dishes = db.relationship("Dish")
     
     def __repr__(self):
         return f'<Menu {self.type}:>'
@@ -37,7 +38,7 @@ class Menu(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "created_at": self.created_at.isoformat(),
             "type": self.type,
         }
 
@@ -67,7 +68,7 @@ class Dish(db.Model):
     __tablename__ = "dish"
 
     id = db.Column(db.Integer, primary_key=True)
-    menu_id = db.Column(db.Integer,db.ForeignKey('menu.id'), nullable=False)
+    menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'), nullable=False)
     name = db.Column(db.String(120), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=func.now())
     ingredients = db.relationship('Ingredient', secondary="dish_ingredient", back_populates="dishes",)
