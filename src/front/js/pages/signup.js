@@ -12,29 +12,35 @@ export const SignUp = () => {
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const navigate = useNavigate()
 
+	// instead of this, use useState:
+	// let email = event.target.emailInput.value; 
+	// let password = event.target.passwordInput.value;
+	// let confirmPassword = event.target.confirmPasswordInput.value;
+
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		// instead of this, use useState:
-		// let email = event.target.emailInput.value; 
-		// let password = event.target.passwordInput.value;
-		// let confirmPassword = event.target.confirmPasswordInput.value;
-
-		const response = await actions.signUp(email, password);
-		// You always want to start with falsey statements; in this case an empty string, 
+		// First validate inputs
 		if (!email || !password || !confirmPassword) {
-			alert('Please enter an input');
+			alert('Please fill out all fields.');
 			return;
-		} else if (password !== confirmPassword) {
-			alert('Password does not match. Please try again.');
-			return;
-		} else if (response) {
-			alert('Account has been created');
-			navigate('/login')
-		} else {
-			alert(" We weren't able to sign you up at this time. Please try again later.");
 		}
-	}
+
+		if (password !== confirmPassword) {
+			alert('Passwords do not match. Please try again.');
+			return;
+		}
+
+		// Proceed with signUp after validation
+		const response = await actions.signUp(email, password);
+
+		if (response) {
+			alert('Account has been created');
+			navigate('/login');
+		} else {
+			alert("We weren't able to sign you up at this time. Please try again later.");
+		}
+	};
 
 	return (
 		<div className="container d-flex flex-wrap mt-5 ">
@@ -74,11 +80,10 @@ export const SignUp = () => {
 						required />
 				</div>
 				<p className="submit-btn d-flex">
-					<a href="/"
+					<button href="/"
 						class="btn btn-outline-light"
 						role="button"
-						id="brunchButton"
-						onclick="toggleFill()">Submit</a>
+						onclick="toggleFill()">Submit</button>
 				</p>
 
 			</form>

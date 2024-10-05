@@ -1,7 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/login.css"
-
 import { Context } from "../store/appContext";
 
 export const Login = () => {
@@ -14,17 +13,21 @@ export const Login = () => {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		const response = await actions.login(email, password);
 		if (!email || !password) {
 			alert('Email or password cannot be empty');
 			return;
-		} else if (response) {
+		}
+
+		const response = await actions.login(email, password);
+
+		if (response) {
 			alert('Welcome back');
-			navigate('/')
+			navigate('/');
 		} else {
 			alert("We weren't able to log you in at this time. Please try again later.");
 		}
 	}
+
 
 	return (
 		<div className="container mt-5">
@@ -57,13 +60,15 @@ export const Login = () => {
 					<input type="checkbox" className="form-check-input" id="exampleCheck1" />
 					<label className="form-check-label" for="exampleCheck1">Remember Me</label>
 				</div>
-				<p className="submit-btn d-flex">
-					<a href="/"
-						class="btn btn-outline-light"
-						role="button"
-						id="brunchButton"
-						onclick="toggleFill()">Submit</a>
-				</p>
+				<div className="submit-btn d-flex">
+					<button
+						type="submit"
+						className="btn btn-outline-light"
+					>
+						Submit
+					</button>
+				</div>
+
 			</form>
 		</div>
 	);
