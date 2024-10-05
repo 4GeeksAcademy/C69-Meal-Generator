@@ -7,17 +7,17 @@ export const Home = () => {
 
 	return (
 		<div className="overallWebsite text-center">
-			<p class="toggle-menu-buttons d-inline-flex gap">
+			<p className="toggle-menu-buttons d-inline-flex gap">
 				<a href="#"
-					class="brunch-menu-btn btn btn-outline-light"
+					className="brunch-menu-btn btn btn-outline-light"
 					role="button"
 					id="brunchButton"
-					onclick="toggleFill()">Brunch Menu</a>
+					onClick="toggleFill()">Brunch Menu</a>
 				<a href="#"
-					class="dinner-menu-btn btn btn-outline-light"
+					className="dinner-menu-btn btn btn-outline-light"
 					role="button"
 					id="dinnerButton"
-					onclick="toggleFill()">Dinner Menu</a>
+					onClick="toggleFill()">Dinner Menu</a>
 			</p>
 			<div className="menu text-center">
 				<h1 className="placeholder-for-menu">MENU</h1>

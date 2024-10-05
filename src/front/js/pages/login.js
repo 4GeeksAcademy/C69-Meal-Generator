@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/login.css"
 
@@ -6,16 +6,19 @@ import { Context } from "../store/appContext";
 
 export const Login = () => {
 	const { actions } = useContext(Context);
+	const [email, setEmail] = useState(''); //default value of the variable goes in the quotes. In this case, an empty string.
+	const [password, setPassword] = useState('');
+
 	const navigate = useNavigate()
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		let email = event.target.emailInput.value;
-		let password = event.target.passwordInput.value;
-
 		const response = await actions.login(email, password);
-		if (response) {
+		if (!email || !password) {
+			alert('Email or password cannot be empty');
+			return;
+		} else if (response) {
 			alert('Welcome back');
 			navigate('/')
 		} else {
@@ -29,12 +32,26 @@ export const Login = () => {
 				<h1 className="login-header text-center">Log-In</h1>
 				<div className="mb-3 col-7">
 					<label for="exampleInputEmail1" className="form-label">Email address</label>
-					<input type="email" name='emailInput' className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required />
+					<input
+						onChange={(e) => setEmail(e.target.value)}
+						value={email}
+						type="email"
+						name='emailInput'
+						className="form-control"
+						id="exampleInputEmail1"
+						aria-describedby="emailHelp"
+						required />
 					<div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
 				</div>
 				<div className="mb-3 col-7">
 					<label for="exampleInputPassword1" className="form-label">Password</label>
-					<input type="password" name='passwordInput' className="form-control" id="exampleInputPassword1" />
+					<input
+						onChange={(e) => setPassword(e.target.value)}
+						value={password}
+						type="password"
+						name='passwordInput'
+						className="form-control"
+						id="exampleInputPassword1" />
 				</div>
 				<div className="mb-3 form-check col-7">
 					<input type="checkbox" className="form-check-input" id="exampleCheck1" />
