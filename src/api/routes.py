@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, Menu, Dish, Ingredient, DishIngredient, Restriction, Preference
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -13,6 +13,111 @@ api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
+
+@api.route('/user', methods=['GET'])
+def get_users():
+
+    users = User.query.all()
+
+    return jsonify([user.serialize() for user in users]), 200
+
+
+@api.route('/menu', methods=['GET'])
+def get_the_menu():
+
+    food = Menu.query.all()
+
+    return jsonify([menu.serialize() for menu in food]), 200
+
+@api.route('/menu/<int:menu_id>/dish', methods=['GET'])
+def get_menu_dishes(menu_id):
+    response = {
+        "data": None,
+        "error": None,
+    }
+
+    statusCode = 200
+
+    try:
+        menu = Menu.query.get(menu_id)
+
+        if not menu:
+            response["error"] = "no menu with this id"
+            return jsonify(response), 404
+        
+        dishes = menu.dishes
+
+        response["data"] = [dish.serialize() for dish in dishes]
+        
+    except Exception as e: 
+        response["error"] = "internal server error"
+        statusCode = 500
+        print(e)
+        
+
+    return jsonify(response), statusCode
+
+@api.route('/dish', methods=['GET'])
+def get_the_dish():
+
+    plate = Dish.query.all()
+
+    finishedPlates = [dish.serialize()for dish in plate]
+
+    return jsonify({"data": finishedPlates}), 200
+
+@api.route('/dish', methods=['POST'])
+def create_dish():
+    response = {
+        "data": None,
+        "error": None,
+    }
+
+    statusCode = 200
+
+    data = request.get_json()
+
+    dishName = data.get("name")
+    menuId = data.get("menu_id")
+
+    if not dishName or not menuId:
+        response["error"] = "name or menu id not specified"
+        return jsonify(response), 
+    
+    try: 
+        dish = Dish(
+            name=dishName, 
+            menu_id=menuId
+        )
+        db.session.add(dish)
+        db.session.commit()
+        response["data"] = dish.serialize()
+
+    except Exception as e: 
+        response["error"] = "internal server error"
+        statusCode = 500
+        print(e)
+
+    return jsonify(response), statusCode
+
+@api.route('/ingredient', methods=['GET'])
+def get_the_ingredient():
+
+    ingredients = Ingredient.query.all()
+
+    return jsonify([ingredient.seralize()for ingredient in ingredients]), 200
+
+@api.route('/menu/<int:menu_id>/availability', methods=['GET'])
+def get_menu_availability(menu_id):
+
+    menu = Menu.query.get(menu_id)
+    if menu is None:
+        return jsonify({"error": "menu not found"}), 404
+    
+    availability = menu.availability
+
+    return jsonify([i.seralize()for i in availability ]), 200
+    
 
 
 @api.route('/sign-up', methods=['POST'])
