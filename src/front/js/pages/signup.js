@@ -83,7 +83,7 @@ export const SignUp = () => {
 					<button href="/"
 						class="btn btn-outline-light"
 						role="button"
-						onclick="toggleFill()">Submit</button>
+						onClick="toggleFill()">Submit</button>
 				</p>
 
 			</form>

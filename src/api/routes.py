@@ -147,7 +147,7 @@ def handle_log_in():
     access_token = create_access_token(identity = user.email, expires_delta = expiration)
     return jsonify({'Token': access_token}), 200
 
-@api.route('private', methods = ['GET'])
+@api.route('/private', methods = ['GET'])
 @jwt_required()
 def private_route():
     current_user = get_jwt_identity()
