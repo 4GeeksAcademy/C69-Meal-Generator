@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import { useEffect, useState } from "react/cjs/react.production.min";
+import React, { useState, useEffect } from "react";
 
 export const DinnerMenu = () => {
 
@@ -7,12 +6,13 @@ export const DinnerMenu = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch("/menu")
+        fetch(`${process.env.BACKEND_URL}/menu`)
             .then((response) => response.json())
             .then((data) => {
+                console.log({data})
                 const dinnerMenu = data.find(menu => menu.type === "Dinner");
                 if (dinnerMenu) {
-                    fetch(`/menu/${dinnerMenu.id}/dish`)
+                    fetch(`${process.env.BACKEND_URL}/menu/${dinnerMenu.id}/dish`)
                         .then(res => res.json())
                         .then(resData => {
                             if (resData.data) {
