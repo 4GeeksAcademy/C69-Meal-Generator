@@ -1,6 +1,8 @@
 import React, { useContext } from "react";
 import { Context } from "../store/appContext";
 import "../../styles/home.css";
+import { DinnerMenu } from "../component/dinnermenu";
+
 
 export const Home = () => {
 	const { store, actions } = useContext(Context);
@@ -21,6 +23,7 @@ export const Home = () => {
 			</p>
 			<div className="menu text-center">
 				<h1 className="placeholder-for-menu">MENU</h1>
+				<DinnerMenu/>
 			</div>
 
 		</div>
