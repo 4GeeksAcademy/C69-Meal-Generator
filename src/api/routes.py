@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Menu, Dish, Ingredient, DishIngredient, Restriction, Preference
+from api.models import db, User, Menu, Dish, Ingredient, DishIngredient, Restriction, Preference, MenuAvailability
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -82,7 +82,7 @@ def create_dish():
 
     if not dishName or not menuId:
         response["error"] = "name or menu id not specified"
-        return jsonify(response), 
+        return jsonify(response), 404 
     
     try: 
         dish = Dish(
@@ -117,6 +117,45 @@ def get_menu_availability(menu_id):
     availability = menu.availability
 
     return jsonify([i.seralize()for i in availability ]), 200
+
+@api.route('/menu/<int:menu_id>/availability', methods=['POST'])
+def create_menu_availability(menu_id):
+    response = {
+        "data": None,
+        "error": None,
+    }
+    
+    statusCode = 200
+
+    data = request.get_json()
+
+    start_time = data.get("start_time")
+    end_time = data.get("end_time")
+    day = data.get("day")
+
+    if not start_time or not end_time or not day:
+        response["error"] = "start time or end time or day not specified"
+        return jsonify(response), 404
+
+    try:
+        menuavailability = MenuAvailability(
+            start_time=start_time,
+            end_time=end_time,
+            day=day,
+            menu_id=menu_id,
+        )
+        db.session.add(menuavailability)
+        db.session.commit()
+        response["data"] = menuavailability.serialize()
+
+    except Exception as e: 
+        response["error"] = "internal server error"
+        statusCode = 500
+        print(e)
+
+    return jsonify(response), statusCode
+
+
     
 
 

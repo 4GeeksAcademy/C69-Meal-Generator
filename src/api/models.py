@@ -46,9 +46,9 @@ class MenuAvailability(db.Model):
     __tablename__ = "menu_availability"
 
     id = db.Column(db.Integer, primary_key=True)
-    day = db.Column(db.String(120), unique=True, nullable=False)
-    start_time = db.Column(db.DateTime, nullable=False)
-    end_time = db.Column(db.DateTime, nullable=False)
+    day = db.Column(db.String(120), nullable=False)
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
     menu_id = db.Column(db.Integer,db.ForeignKey('menu.id'), nullable=False)
 
     def __repr__(self):
@@ -59,8 +59,8 @@ class MenuAvailability(db.Model):
         return {
             "id": self.id,
             "day": self.day,
-            "start_time": self.start_time,
-            "end_time": self.end_time,
+            "start_time": str(self.start_time),
+            "end_time": str(self.end_time),
             "menu_id": self.menu_id,
         }
     
@@ -82,6 +82,7 @@ class Dish(db.Model):
         "menu_id": self.menu_id,
         "name": self.name,
         "created_at": self.created_at,
+        "ingredients": [ingredient.serialize() for ingredient in self.ingredients],
     }
 
 class Ingredient(db.Model):
