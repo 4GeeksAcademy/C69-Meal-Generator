@@ -4,29 +4,48 @@ export const DinnerMenu = () => {
 
     const [dishes, setDishes] = useState([]);
     const [error, setError] = useState(null);
+    const [menus, setMenus] = useState([]);
 
-    useEffect(() => {
-        fetch(`${process.env.BACKEND_URL}/menu`)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log({data})
-                const dinnerMenu = data.find(menu => menu.type === "Dinner");
-                if (dinnerMenu) {
-                    fetch(`${process.env.BACKEND_URL}/menu/${dinnerMenu.id}/dish`)
-                        .then(res => res.json())
-                        .then(resData => {
-                            if (resData.data) {
-                                setDishes(resData.data)
-                            } else {
-                                setError("Dishes not found")
-                            }
-                        })
-                        .catch(err => setError("error fetching dishes"))
+    const fetchMenus = async () => {
+        const menus = await fetch(`${process.env.BACKEND_URL}/menu`)
+            .then((result) => result.json())
+            .catch(err => {
+                setError("error fetching menu")
+                console.log(err)
+                return []
+            })
+        return menus
+    }
+    const fetchMenuDishes = async (menuId) => {
+        const dishes = await fetch(`${process.env.BACKEND_URL}/menu/${menuId}/dish`)
+            .then(res => res.json())
+            .then(resData => {
+                if (resData.data) {
+                    return resData.data
                 } else {
-                    setError("dinner menu not found")
+                    return []
                 }
             })
-            .catch(err => setError("error fetching menu"))
+            .catch(err => {
+                setError("error fetching dishes")
+                console.log(err)
+                return []
+            })
+            return dishes
+    }
+
+    const fetchAvailableMenu = async () => {
+        const menus = await fetchMenus()
+        const menu = menus.find(menu => menu.type === "Dinner")
+        const dishes = await fetchMenuDishes(menu.id) 
+        setDishes(dishes)
+    }
+
+
+    useEffect(() => {
+
+        fetchAvailableMenu()
+
     }, [])
 
     return (
@@ -37,7 +56,9 @@ export const DinnerMenu = () => {
                 {dishes.map(dish => (
                     <li key={dish.id}>
                         <h2>{dish.name}</h2>
-                        <p>{dish.ingredients}</p>
+                        <div>
+                            {dish.ingredients.map(ingredient => ingredient.name).join(', ')}
+                        </div>
                     </li>
                 ))}
             </ul>
