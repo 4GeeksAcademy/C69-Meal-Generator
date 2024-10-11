@@ -3,12 +3,16 @@ import "../../styles/profile.css"
 import ToggleSwitch from '../component/ToggleSwitch';
 
 const foodRestrictons = [
-    "dairy", "eggs", "fish", "shellfish", "wheat", "soybeans",
-    "sesame", "tree nuts", "peanuts", "pork", "beef"
+    "dairy", "eggs", "seafood", "shellfish", "wheat", "soybeans",
+    "sesame", "tree nuts", "peanuts",
+]
+const foodReligionRestrictions =[
+    "pork", "beef", "alcohol"
 ]
 const foodPreferences = [
-    "dairy", "eggs", "fish", "shellfish", "wheat", "soybeans",
-    "sesame", "tree nuts", "peanuts", "pork", "beef"
+    "No Raw Fish", "Vegetarian", "Vegan", "Gluten Intolerance","Murcury Sensitvity / Pregnancy",
+    "Carnivore", "Keto / Low Carb", "Lactose Intolerance", "Egg Free", "Soy", "No Seaweed",
+    "Low Sodium"
 ]
 
 
@@ -48,7 +52,7 @@ export const Profile = () => {
                             className="nav-link"
                             onClick={() => setActiveTab("restrictions")}
                             href="#">
-                            Restrictions
+                            Restrictions (Allergy)
                         </a>
                     </li>
                     <li className={`nav-link ${activeTab === "favorites" ? "active" : ""}`}>
@@ -101,10 +105,11 @@ export const Profile = () => {
                                             >
 
                                             </div> */}
-                                            <ToggleSwitch
+                                            {/* <ToggleSwitch
                                                 isOn={restrictions[preference] || false}
                                                 onToggle={() => handleToggle(preference)}
-                                            />
+                                            /> */}
+                                            <input type="checkbox"></input>
                                         </div>
                                     </div>
                                 ))}
@@ -132,6 +137,21 @@ export const Profile = () => {
                                             >
 
                                             </div> */}
+                                            <ToggleSwitch
+                                                isOn={restrictions[restriction] || false}
+                                                onToggle={() => handleToggle(restriction)}
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                                <hr></hr>
+                                <h5 className="mb-4 text-center">Religious Restrictions</h5>
+                                {foodReligionRestrictions.map((restriction) => (
+                                    <div key={restriction} className="col-md-6 mb-3 d-flex justify-content-center">
+                                        <div className="d-flex align-items-center justify-content-between border rounded p-2 w-100">
+                                            <span className="text-capitalize">
+                                                {restriction}
+                                            </span>
                                             <ToggleSwitch
                                                 isOn={restrictions[restriction] || false}
                                                 onToggle={() => handleToggle(restriction)}
