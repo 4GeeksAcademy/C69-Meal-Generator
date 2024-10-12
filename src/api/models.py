@@ -9,7 +9,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    ingredident_restrictions = db.relationship('Ingredient', secondary="restriction", back_populates="restricted_by_users")
+    ingredient_restrictions = db.relationship('Ingredient', secondary="restriction", back_populates="restricted_by_users")
     ingredient_preferences = db.relationship('Ingredient', secondary="preference", back_populates="preferred_by_users")
     
 
