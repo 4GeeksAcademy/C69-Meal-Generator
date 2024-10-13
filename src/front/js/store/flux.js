@@ -47,7 +47,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return false;
 					}
 				} catch (error) {
-					console.log('There was an error at log-in', error);
 					throw error;
 				}
 			},

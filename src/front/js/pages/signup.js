@@ -32,7 +32,7 @@ export const SignUp = () => {
 		}
 
 		// Proceed with signUp after validation
-		const response = await actions.signUp(email, password);
+		const response = await actions.signup(email, password);
 
 		if (response) {
 			alert('Account has been created');
@@ -83,7 +83,7 @@ export const SignUp = () => {
 					<button href="/"
 						class="btn btn-outline-light"
 						role="button"
-						onClick="toggleFill()">Submit</button>
+						>Submit</button>
 				</p>
 
 			</form>

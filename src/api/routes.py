@@ -7,7 +7,7 @@ from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, decode_token, JWTManager
 
 api = Blueprint('api', __name__)
 
@@ -195,4 +195,43 @@ def private_route():
         return jsonify({'msg': 'User not found'}), 404
     
     return jsonify(logged_in_as = current_user), 200
+    
+@api.route('/forgot-password', methods=['POST'])
+def handle_forgot_password():
+    email = request.json.get('email', None)
+    if not email:
+        return jsonify({'msg': 'Email is required'}), 400
+
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        expiration_delta = datetime.timedelta(minutes=30)
+        reset_token = create_access_token(identity=user.id, expires_delta=expiration_delta)
+        # send_reset_email(user.email, reset_token)
+
+    return jsonify({'msg': 'Please check your email to reset your password'}), 200
+
+
+@api.route('/reset-password', methods= ['POST'])
+def handle_reset_password():
+    token = request.json.get('token', None)
+    if not token:
+        return jsonify({'msg':'Token is required'}), 400
+    try:
+        user_id = decode_token(token)
+    except Exception:
+        return jsonify({'msg': 'Invalid or expired token'}), 400
+    
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'msg':'Invalid token or user not found'}), 404
+    
+    password = request.json.get('password', None)
+    
+    hashed_password = generate_password_hash(password)
+    user.password = hashed_password
+    
+    db.session.commit()
+
+    return jsonify({'msg': 'Your password has been successfully reset'}), 200
     
