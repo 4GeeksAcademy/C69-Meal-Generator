@@ -10,6 +10,7 @@ export const Navbar = () => {
 	const handleLogout= () => {
 		sessionStorage.removeItem("token");
 		navigate("/");
+		window.location.reload()
 	}
 	return (
 		<nav className="navbar navbar-light d-flex">
@@ -26,7 +27,7 @@ export const Navbar = () => {
 						</button>
 						<ul className="dropdown-menu dropdown-menu-dark dropdown-menu-end">
 							<li><Link className="dropdown-item" to="/profile">Profile</Link></li>
-							<li><button className="dropdown-item" onclick={handleLogout}>Sign-Out</button></li>
+							<li><button className="dropdown-item" onClick={handleLogout}>Sign-Out</button></li>
 						</ul>
 
 				</div>
