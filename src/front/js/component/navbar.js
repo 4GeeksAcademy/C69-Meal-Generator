@@ -4,11 +4,11 @@ import "../../styles/navbar.css"
 import towaLogo from "../../img/towa-logo.png"
 
 export const Navbar = () => {
-	const isLoggedIn = !!sessionStorage.getItem("token");
+	const isLoggedIn = !!localStorage.getItem("token");
 	const navigate= useNavigate();
 
 	const handleLogout= () => {
-		sessionStorage.removeItem("token");
+		localStorage.removeItem("token");
 		navigate("/");
 		window.location.reload()
 	}

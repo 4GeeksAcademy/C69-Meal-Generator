@@ -1,54 +1,89 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			token: null,
+			user: null
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
-
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
+			signup: async (email, password) => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + '/api/sign-up', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							email: email.toLowerCase(),
+							password: password
+						})
+					})
+					const data = await response.json();
+					console.log(data);
 					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
+				} catch (error) {
+					console.log('There was an error at sign-up.', error);
+					throw error
 				}
 			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
+			login: async (email, password) => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + '/api/log-in', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							email: email.toLowerCase(),
+							password: password
+						})
+					})
+					const data = await response.json();
+					localStorage.setItem('jwt-token', data.token);
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
+					if (response.status === 200) {
+						localStorage.setItem('token', data.token);
+						return true;
+					} else if (response.status === 401) {
+						alert(data.msg)
+						return false;
+					} else {
+						console.log('Unexpected error occured at login.', response.status);
+						return false;
+					}
+				} catch (error) {
+					console.log('There was an error at log-in', error);
+					throw error;
+				}
+			},
 
-				//reset the global store
-				setStore({ demo: demo });
-			}
-		}
+			userProfile: async () => {
+				try {
+					const token = localStorage.getItem('jwt-token');
+
+					const resp = await fetch(process.env.BACKEND_URL + '/api/private', {
+						method: 'GET',
+						headers: {
+							"Content-Type": 'application/json',
+							'Authorization': 'Bearer' + token
+						}
+					});
+
+					if (!resp.ok) {
+						throw Error('There was a problem at login')
+					} else if (resp.status === 403) {
+						throw Error('Missing or invalid token');
+					} else {
+						throw Error('Unknown error');
+					}
+				} catch (error) {
+					console.log('There was an error fining your account', error)
+				}
+
+				const data = await resp.json();
+				console.log('This is the data you requested', data);
+				return data
+			},
+			logout: () => {
+				setStore({ token: null, user: null });
+			},
+		},
 	};
-};
+}
 
-export default getState;
+export default getState
