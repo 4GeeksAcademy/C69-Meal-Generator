@@ -155,6 +155,39 @@ def create_menu_availability(menu_id):
 
     return jsonify(response), statusCode
 
+@api.route('/dish/<int:dish_id>/ingredient/<int:ingredient_id>/order', methods=['POST'])
+def handle_ingredient_order(dish_id, ingredient_id):
+    response = {
+        "data": None,
+        "error": None,
+    }
+    
+    statusCode = 200
+    data = request.get_json()
+
+    order = data.get("order")
+
+    if not order:
+        response["error"] = "order not specified"
+        return jsonify(response), 404
+    
+    try:
+        dishingredient = db.session.execute(
+            db.select(DishIngredient)
+            .where(
+                DishIngredient.dish_id==dish_id,
+                DishIngredient.ingredient_id==ingredient_id,
+            )
+        ).scalar_one()
+        dishingredient.ingredient_order = order
+        db.session.commit()
+
+    except Exception as e: 
+        response["error"] = "internal server error"
+        statusCode = 500
+        print(e)
+
+    return jsonify(response), statusCode
 
     
 

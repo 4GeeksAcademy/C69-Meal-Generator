@@ -71,18 +71,21 @@ class Dish(db.Model):
     menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'), nullable=False)
     name = db.Column(db.String(120), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=func.now())
-    ingredients = db.relationship('Ingredient', secondary="dish_ingredient", back_populates="dishes",)
+    ingredients = db.relationship('Ingredient', secondary="dish_ingredient", back_populates="dishes", order_by="DishIngredient.ingredient_order")
 
     def __repr__(self):
         return f'<Dish {self.name}:>'
     
     def serialize(self):
+        ingredients = [ingredient.serialize() for ingredient in self.ingredients]
+        # sorted_ingredients = sorted(ingredients, key=lambda ingredient : ingredient["ingredient_order"])
         return {
         "id": self.id,
         "menu_id": self.menu_id,
         "name": self.name,
         "created_at": self.created_at,
-        "ingredients": [ingredient.serialize() for ingredient in self.ingredients],
+        # "ingredients": sorted_ingredients, 
+        "ingredients": ingredients,
     }
 
 class Ingredient(db.Model):
@@ -111,6 +114,7 @@ class DishIngredient(db.Model):
     __tablename__ = "dish_ingredient"
 
     id = db.Column(db.Integer, primary_key=True)
+    ingredient_order = db.Column(db.Integer, nullable=True)
     dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
     ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
 
