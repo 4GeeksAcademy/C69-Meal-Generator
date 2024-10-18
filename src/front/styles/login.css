@@ -7,6 +7,22 @@
     justify-content: center;
 }
 
-.form-check {
-    padding-left: 2.3rem;
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.login-options .form-check {
+    margin: 0;
+}
+
+.forgotPassword {
+    color: blanchedalmond;
+    text-decoration: none;
+}
+
+.forgotPassword:hover {
+    color: antiquewhite;
+    text-decoration: underline;
 }
