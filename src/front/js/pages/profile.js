@@ -10,7 +10,7 @@ const foodReligionRestrictions =[
     "pork", "beef", "alcohol"
 ]
 const foodPreferences = [
-    "No Raw Fish", "Vegetarian", "Vegan", "Gluten Intolerance","Murcury Sensitvity / Pregnancy",
+    "No Raw Fish", "Vegetarian", "Vegan", "Gluten Intolerance","Mercury Sensitvity / Pregnancy",
     "Carnivore", "Keto / Low Carb", "Lactose Intolerance", "Egg Free", "Soy", "No Seaweed",
     "Low Sodium"
 ]
