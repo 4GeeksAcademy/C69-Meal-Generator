@@ -6,7 +6,7 @@ import { Menu, } from "../component/menu";
 
 export const Home = () => {
 	const { store, actions } = useContext(Context);
-	const [menuType, setMenuType] = useState("Dinner");
+	const [menuType, setMenuType] = useState("");
 
 	const [dishes, setDishes] = useState([]);
 	const [error, setError] = useState(null);
@@ -40,23 +40,58 @@ export const Home = () => {
 		return dishes
 	}
 
-	const fetchAvailableMenu = async (menuType) => {
-		const menus = await fetchMenus()
-		console.log({ menus })
+	const stringTimeToNumber = (stringTime) => {
+		return Number(stringTime.split(":").join(""))
+	}
+
+	const determineActiveMenu = (menus) => {
+		const now = new Date();
+		const currentDay = now.toLocaleDateString('en-US', { weekday: 'long'});
+		const currentStringTime = now.toLocaleTimeString('en-US', { hour12: false});
+		const currentTime = stringTimeToNumber(currentStringTime)
+
+		console.log({currentDay, currentTime, menus})
+
+		for (const menu of menus) {
+			const availability = menu.availability.find(a => {
+				const menuStartTime = stringTimeToNumber(a.start_time)
+				const menuEndTime = stringTimeToNumber(a.end_time)
+
+				return a.day.toLowerCase() === currentDay.toLocaleLowerCase() &&
+				menuStartTime <= currentTime &&
+				menuEndTime >= currentTime
+
+			});
+			
+			if (availability) {
+				return menu.type;
+			}
+		}
+		return "Dinner"; 
+	}
+
+	const fetchAvailableMenu = async (menus ,menuType) => {
 		const menu = menus.find(menu => menu.type === menuType)
 		const dishes = await fetchMenuDishes(menu.id)
 		setDishes(dishes)
 	}
 
-	useEffect(() => {
+	const fetchCurrentlyAvailableMenu = async () => {
+		const menus = await fetchMenus()
+		const currentlyActiveMenuType = determineActiveMenu(menus)
+		fetchAvailableMenu(menus ,currentlyActiveMenuType)
+		setMenus(menus)
+		setMenuType(currentlyActiveMenuType)
+	}
 
-		fetchAvailableMenu(menuType)
+	useEffect(() => {
+		fetchCurrentlyAvailableMenu()
 
 	}, [])
 
-	const populateMenu = (menuType) => {
+	const populateMenu = (menus,menuType) => {
 		setMenuType(menuType)
-		fetchAvailableMenu(menuType)
+		fetchAvailableMenu(menus, menuType)
 	}
 
 	return (
@@ -68,7 +103,7 @@ export const Home = () => {
 					data-bs-toggle="button"
 					autocomplete="off"
 					aria-pressed="true"
-					onClick={() => populateMenu("Brunch")}
+					onClick={() => populateMenu(menus, "Brunch")}
 				>
 						Brunch Menu
 				</button>
@@ -78,7 +113,7 @@ export const Home = () => {
 					data-bs-toggle="button"
 					autocomplete="off"
 					aria-pressed="true"
-					onClick={() => populateMenu("Dinner")}
+					onClick={() => populateMenu(menus, "Dinner")}
 				>
 						Dinner Menu
 				</button>

@@ -6,7 +6,9 @@ export const Menu = (props) => {
 
     return (
         <div>
-            <h1>{menuType} Menu</h1>
+            {!!menuType && (
+                <h1>{menuType} Menu</h1>
+            )}
             <ul>
                 {dishes.map(dish => (
                     <li key={dish.id}>
