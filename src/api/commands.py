@@ -1,6 +1,6 @@
 
 import click
-from api.models import db, User
+from api.models import db, User, Menu
 
 """
 In this file, you can add as many commands as you want using the @app.cli.command decorator
@@ -8,6 +8,38 @@ Flask commands are usefull to run cronjobs or tasks outside of the API but sill 
 with youy database, for example: Import the price of bitcoin every night as 12am
 """
 def setup_commands(app):
+
+    @app.cli.command("populate-restaurant-menu")
+    def generate_menu():
+        menu_list = [
+            {
+                "id": 0,
+                "name": "menu item 1",
+                "ingredients": {"dish ingredient 1", "dish ingredient 2"},
+                "description": "menu dish description tbc....",
+            },
+            {
+                "id": 1,
+                "name": "menu item 2",
+                "ingredients": {"dish ingredient 1", "dish ingredient 2"},
+                "description": "menu dish description tbc....",
+            },
+            {
+                "id": 2,
+                "name": "menu item 3",
+                "ingredients": {"dish ingredient 1", "dish ingredient 2"},
+                "description": "menu dish description tbc....",
+            }
+        ]
+        for dish in menu_list:
+            new_dish = Menu(
+                id = dish["id"],
+                name = dish["name"],
+                ingredients = dish["ingredients"],
+                description = dish["description"],
+            )
+        db.session.add(new_dish)
+        db.session.commit()
     
     """ 
     This is an example command "insert-test-users" that you can run from the command line
