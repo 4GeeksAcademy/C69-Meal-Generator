@@ -19,4 +19,5 @@
 
 .forgotPassword:hover {
     color: antiquewhite;
+    text-decoration: underline;
 }
