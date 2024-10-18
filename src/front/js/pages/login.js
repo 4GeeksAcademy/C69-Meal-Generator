@@ -56,12 +56,14 @@ export const Login = () => {
 						className="form-control"
 						id="exampleInputPassword1" />
 				</div>
-				<div className="remember-me mb-3 form-check col-6">
-					<input type="checkbox" className="form-check-input" id="exampleCheck1" />
-					<label className="form-check-label" for="exampleCheck1">Remember Me</label>
-				</div>
-				<div className="forgot-password mb-3 col-6">
-				<a href="/forgot-password" className="forgotPassword">Forgot Password</a>
+				<div className="login-options d-flex justify-content-between mb-3 col-7">
+					<div className="remember-me form-check">
+						<input type="checkbox" className="form-check-input" id="exampleCheck1" />
+						<label className="form-check-label" htmlFor="exampleCheck1">Remember Me</label>
+					</div>
+					<div className="forgot-password">
+						<Link to="/forgot-password" className="forgotPassword">Forgot Password</Link>
+					</div>
 				</div>
 				<div className="submit-btn d-flex">
 					<button

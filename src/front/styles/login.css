@@ -7,16 +7,14 @@
     justify-content: center;
 }
 
-.form-check {
-    padding-left: 2.3rem;
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.remember-me {
-    padding-left: 37vh;
-}
-
-.forgot-password {
-    padding-left: 27vh;
+.login-options .form-check {
+    margin: 0;
 }
 
 .forgotPassword {
