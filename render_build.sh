@@ -8,3 +8,5 @@ npm run build
 pipenv install
 
 pipenv run upgrade
+
+pipenv run populate-menu
