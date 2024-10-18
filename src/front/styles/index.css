@@ -4,3 +4,25 @@
 .h-100 {
     background-color: #003B51; 
 }
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+footer {
+    background-color: #002837;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
