@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../../styles/forgot_pass.css"
+import "../../styles/forgot_pass.css";
 import { Context } from "../store/appContext";
 
 export const ForgotPassword = () => {

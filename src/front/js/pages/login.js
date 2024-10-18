@@ -56,10 +56,12 @@ export const Login = () => {
 						className="form-control"
 						id="exampleInputPassword1" />
 				</div>
-				<div className="mb-3 form-check col-7">
+				<div className="remember-me mb-3 form-check col-6">
 					<input type="checkbox" className="form-check-input" id="exampleCheck1" />
 					<label className="form-check-label" for="exampleCheck1">Remember Me</label>
-					<a href="/forgot-password" className="forgotPassword">Forgot Password</a>
+				</div>
+				<div className="forgot-password mb-3 col-6">
+				<a href="/forgot-password" className="forgotPassword">Forgot Password</a>
 				</div>
 				<div className="submit-btn d-flex">
 					<button
@@ -74,3 +76,5 @@ export const Login = () => {
 		</div>
 	);
 };
+
+//issue: remember me and forgot password keeps disaligning depending on the size of user's screen.
