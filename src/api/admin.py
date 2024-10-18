@@ -1,7 +1,7 @@
   
 import os
 from flask_admin import Admin
-from .models import db, User, Menu, Dish, MenuAvailability, Ingredient
+from .models import db, User, Menu, Dish, MenuAvailability, Ingredient, DishIngredient
 from flask_admin.contrib.sqla import ModelView
 
 class ChildView(ModelView):
@@ -21,6 +21,7 @@ def setup_admin(app):
     admin.add_view(ChildView(Dish, db.session))
     admin.add_view(ChildView(Ingredient, db.session))
     admin.add_view(ChildView(MenuAvailability, db.session))
+    admin.add_view(ChildView(DishIngredient, db.session))
 
     # You can duplicate that line to add mew models
     # admin.add_view(ModelView(YourModelName, db.session))
