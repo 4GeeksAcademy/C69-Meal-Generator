@@ -59,6 +59,7 @@ export const Login = () => {
 				<div className="mb-3 form-check col-7">
 					<input type="checkbox" className="form-check-input" id="exampleCheck1" />
 					<label className="form-check-label" for="exampleCheck1">Remember Me</label>
+					<a href="/forgot-password" className="forgotPassword">Forgot Password</a>
 				</div>
 				<div className="submit-btn d-flex">
 					<button

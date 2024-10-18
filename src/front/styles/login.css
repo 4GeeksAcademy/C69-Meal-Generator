@@ -10,3 +10,13 @@
 .form-check {
     padding-left: 2.3rem;
 }
+
+.forgotPassword {
+    padding-left: 9rem;
+    color: blanchedalmond;
+    text-decoration: none;
+}
+
+.forgotPassword:hover {
+    color: antiquewhite;
+}
