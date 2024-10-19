@@ -24,8 +24,6 @@ export const Menu = (props) => {
                     </ul>
                 </>
             )}
-
         </div>
-
     )
 };
