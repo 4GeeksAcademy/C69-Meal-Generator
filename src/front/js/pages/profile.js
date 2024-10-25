@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { Context } from "../store/appContext";
 import "../../styles/profile.css"
 import ToggleSwitch from '../component/ToggleSwitch';
 
@@ -17,8 +18,10 @@ const foodPreferences = [
 
 
 export const Profile = () => {
+    const {store, actions} = useContext(Context);
     const [activeTab, setActiveTab] = useState("preferences")
     const [restrictions, setRestrictions] = useState({});
+
 
     const handleToggle = (restriction) => {
         setRestrictions(prev => ({
@@ -33,8 +36,8 @@ export const Profile = () => {
     }
     return (
         <>
-            <div className="container profile-page-top-div">
-                <h3>Profile page tbc</h3>
+            <div className="container profile-page-top-div text-center">
+                <h3>{store.user && `Welcome ${store.user.first_name}`}</h3>
 
             </div>
             <div className="container profile-page-div">

@@ -7,7 +7,7 @@ from flask_admin.contrib.sqla import ModelView
 class ChildView(ModelView):
     column_display_pk = True # optional, but I like to see the IDs in the list
     column_hide_backrefs = False
-    column_list = ('id', 'name', 'parent')
+    column_list = ('id', 'name', 'parent', 'first_name', 'last_name', 'email')
 
 def setup_admin(app):
     app.secret_key = os.environ.get('FLASK_APP_KEY', 'sample key')

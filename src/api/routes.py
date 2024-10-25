@@ -196,11 +196,13 @@ def handle_ingredient_order(dish_id, ingredient_id):
 def handle_sign_up():
     email = request.json.get('email', None)
     password = request.json.get('password', None)
+    first_name = request.json.get('first_name', "")
+    last_name = request.json.get('last_name', "")
     if User.query.filter_by(email = email).first():
         return jsonify({'msg': 'User already exists'}), 400
     
     hashed_password = generate_password_hash(password)
-    new_user = User(email = email, password = hashed_password, is_active = True)
+    new_user = User(email = email, password = hashed_password, is_active = True, first_name = first_name, last_name = last_name)
 
     db.session.add(new_user)
     db.session.commit()
@@ -217,7 +219,7 @@ def handle_log_in():
     
     expiration_delta = datetime.timedelta(days=7)
     access_token = create_access_token(identity = user.email, expires_delta = expiration_delta)
-    return jsonify({'token': access_token}), 200
+    return jsonify({'token': access_token, "user": user.serialize()}), 200
 
 @api.route('/private', methods = ['GET'])
 @jwt_required()

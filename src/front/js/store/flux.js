@@ -1,18 +1,20 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			token: null,
-			user: null
+			token: localStorage.getItem("token") || null,
+			user: JSON.parse(localStorage.getItem("currentUser")) || null,
 		},
 		actions: {
-			signup: async (email, password) => {
+			signup: async (email, password, firstName, lastName) => {
 				try {
 					const response = await fetch(process.env.BACKEND_URL + '/api/sign-up', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({
 							email: email.toLowerCase(),
-							password: password
+							password: password,
+							first_name: firstName,
+							last_name: lastName,
 						})
 					})
 					const data = await response.json();
@@ -31,13 +33,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 						body: JSON.stringify({
 							email: email.toLowerCase(),
 							password: password
+
 						})
 					})
 					const data = await response.json();
-					localStorage.setItem('jwt-token', data.token);
-
+					// localStorage.setItem('jwt-token', data.token);
 					if (response.status === 200) {
 						localStorage.setItem('token', data.token);
+						localStorage.setItem("currentUser", JSON.stringify(data.user))
+						console.log("currentUser from flux:", JSON.stringify(data.user))
 						return true;
 					} else if (response.status === 401) {
 						alert(data.msg)
