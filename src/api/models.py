@@ -40,6 +40,7 @@ class Menu(db.Model):
             "id": self.id,
             "created_at": self.created_at.isoformat(),
             "type": self.type,
+            "availability": [availability.serialize() for availability in self.availability],
         }
 
 class MenuAvailability(db.Model):
