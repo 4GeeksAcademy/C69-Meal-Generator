@@ -1,6 +1,6 @@
 
 import click
-from api.models import db, User
+from api.models import db, User, Ingredient
 
 """
 In this file, you can add as many commands as you want using the @app.cli.command decorator
@@ -32,3 +32,134 @@ def setup_commands(app):
     @app.cli.command("insert-test-data")
     def insert_test_data():
         pass
+
+
+
+    @app.cli.command("populate-ingredients")   
+    def generate_ingredients_list(): 
+        ingredient_list = [
+            {
+                "id": "13",
+                "name": "Grilled miso marinated salmon",
+            },
+            {
+                "id": "14", 
+                "name": "Shiitake mushrooms",
+            },
+            {
+                "id": "15",
+                "name": "Shimeji mushrooms",
+            },
+            {
+                "id": "16",
+                "name": "Maitake mushrooms"
+            },
+            {
+                "id": "17",
+                "name": "Grilled black cod	",
+            },
+            {
+                "id": "18",
+                "name": "Yuzu soy sauce",
+            },
+            {
+                "id": "19",
+                "name": "Sweet soy sauce soup",
+            },
+            {
+                "id": "20",
+                "name": "Washu beef",
+            },
+            {
+                "id": "21",
+                "name": "Tofu",
+            },
+            {
+                "id": "22",
+                "name": "Nappa cabbage",
+            },
+            {
+                "id": "23",
+                "name": "Burdock",
+            },
+            {
+                "id": "24",
+                "name": "Carrot",
+            },
+            {
+                "id": "25",
+                "name": "Scallion",
+            },
+            {
+                "id": "26",
+                "name": "A5 wagyu beef",
+            },
+            {
+                "id": "27",
+                "name": "Vegetables",
+            },
+            {
+                "id": "28",
+                "name": "Wasabi",
+            },
+            {
+                "id": "29",
+                "name": "Yuzu kosho",
+            },
+            {
+                "id": "30",
+                "name": "Miso",
+            },
+            {
+                "id": "31",
+                "name": "Soy Sauce",
+            },
+            {
+                "id": "32",
+                "name": "Grilled fish collar of the day",
+            },
+            {
+                "id": "33",
+                "name": "Rice",
+            },
+            {
+                "id": "34",
+                "name": "Grilled eel served with sweet soy sauce",
+            },
+            {
+                "id": "35",
+                "name": "Buckwheat noodle soup with grilled duck breast",
+            },
+            {
+                "id": "36",
+                "name": "Yuzu Zest",
+            },
+            {
+                "id": "37",
+                "name": "Assorted Vegtables",
+            },
+            {
+                "id": "38",
+                "name": "Shrimp tempura",
+            },
+            {
+                "id": "39",
+                "name": "Grilled free-range organic chicken thigh",
+            },
+            {
+                "id": "40",
+                "name": "Sliced wagyu beef",
+            },
+            {
+                "id": "41",
+                "name": "Duck sauce",
+            },
+        ]
+
+        for ingredient in ingredient_list:
+            new_ingredient=Ingredient(
+                id=ingredient['id'],
+                name=ingredient['name']
+            )
+            db.session.add(new_ingredient)
+            db.session.commit
