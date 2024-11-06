@@ -103,7 +103,7 @@ class Ingredient(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
-    calories = db.Column(db.Float(precision=2),unique=False, nullable=False)
+    calories = db.Column(db.Float(precision=2),unique=False, nullable=True)
     dishes = db.relationship('Dish', secondary="dish_ingredient", back_populates="ingredients")
     restricted_by_users = db.relationship('User', secondary='restriction', back_populates="ingredient_restrictions")
     preferred_by_users = db.relationship('User', secondary="preference", back_populates="ingredient_preferences")

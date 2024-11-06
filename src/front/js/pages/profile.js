@@ -32,6 +32,7 @@ export const Profile = () => {
 
     const handleSave = async () => {
         console.log("saving preferences:", restrictions);
+        
         alert("preferences saved successfully!");
     }
     return (
@@ -42,9 +43,9 @@ export const Profile = () => {
             </div>
             <div className="container profile-page-div">
                 <ul className="nav nav-pills nav-fill">
-                    <li className="nav-item">
+                    <li className={`nav-link ${activeTab === "preferences" ? "active" : ""}`}>
                         <a
-                            className={`nav-link ${activeTab === "preferences" ? "active" : ""}`}
+                            className="nav-link"
                             onClick={() => setActiveTab("preferences")}
                             href="#">
                             Preferences
