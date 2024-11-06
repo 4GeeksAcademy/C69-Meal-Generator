@@ -162,4 +162,4 @@ def setup_commands(app):
                 name=ingredient['name']
             )
             db.session.add(new_ingredient)
-            db.session.commit
+            db.session.commit()
