@@ -1,6 +1,6 @@
 
 import click
-from api.models import db, User, Ingredient
+from api.models import db, User, Ingredient, Dish
 
 """
 In this file, you can add as many commands as you want using the @app.cli.command decorator
@@ -162,4 +162,35 @@ def setup_commands(app):
                 name=ingredient['name']
             )
             db.session.add(new_ingredient)
+            db.session.commit()
+
+
+    @app.cli.command("populate-dishes")   
+    def generate_dishes_list(): 
+        dish_list = [
+            {
+                "id": "12",
+                "name": "Salmon and Mushroom Toban Yaki",
+                "ingredients": ["Grilled miso marinated salmon", "Maitake mushrooms", "Shiitake mushrooms", "Shimeji mushrooms"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "1",
+            },
+             {
+                "id": "13",
+                "name": "Gindara Yuan Yaki",
+                "ingredients": ["Grilled black cod", "Yuzu soy sauce"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "2",
+            },
+        ]
+
+        for dish in dish_list:
+            new_dish=Dish(
+                id=dish['id'],
+                name=dish['name'],
+                ingredients=dish['ingredients'],
+                created_at=dish['created_at'],
+                menu_id=dish['menu_id'],
+            )
+            db.session.add(new_dish)
             db.session.commit()
