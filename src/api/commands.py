@@ -1,6 +1,5 @@
-
 import click
-from api.models import db, User, Menu, Ingredient, Dish
+from api.models import db, User, Ingredient, Dish, Menu, Restriction, Preference, DishIngredient
 
 """
 In this file, you can add as many commands as you want using the @app.cli.command decorator
@@ -8,43 +7,11 @@ Flask commands are usefull to run cronjobs or tasks outside of the API but sill 
 with youy database, for example: Import the price of bitcoin every night as 12am
 """
 def setup_commands(app):
-
-    @app.cli.command("populate-restaurant-menu")
-    def generate_menu():
-        menu_list = [
-            {
-                "id": 0,
-                "name": "menu item 1",
-                "ingredients": {"dish ingredient 1", "dish ingredient 2"},
-                "description": "menu dish description tbc....",
-            },
-            {
-                "id": 1,
-                "name": "menu item 2",
-                "ingredients": {"dish ingredient 1", "dish ingredient 2"},
-                "description": "menu dish description tbc....",
-            },
-            {
-                "id": 2,
-                "name": "menu item 3",
-                "ingredients": {"dish ingredient 1", "dish ingredient 2"},
-                "description": "menu dish description tbc....",
-            }
-        ]
-        for dish in menu_list:
-            new_dish = Menu(
-                id = dish["id"],
-                name = dish["name"],
-                ingredients = dish["ingredients"],
-                description = dish["description"],
-            )
-        db.session.add(new_dish)
-        db.session.commit()
     
     """ 
     This is an example command "insert-test-users" that you can run from the command line
     by typing: $ flask insert-test-users 5
-    Note: 5 is the number of users to add
+    Note: 5 is the number of users to add 
     """
     @app.cli.command("insert-test-users") # name of our command
     @click.argument("count") # argument of out command
@@ -64,6 +31,29 @@ def setup_commands(app):
     @app.cli.command("insert-test-data")
     def insert_test_data():
         pass
+
+
+    @app.cli.command("populate-menus")
+    def generate_menus_list():
+        menu_list = [
+            {
+                "id": "1",
+                "type": "Dinner",
+            },
+            {
+                "id": "2",
+                "type": "Brunch",
+            },
+        ]
+
+        for menu in menu_list:
+            new_menu = Menu(
+                id=menu['id'],
+                type=menu['type'],
+            )
+
+            db.session.add(new_menu)
+            db.session.commit()
 
     @app.cli.command("populate-ingredients")   
     def generate_ingredients_list(): 
@@ -195,30 +185,11 @@ def setup_commands(app):
             db.session.commit()
 
 
-    @app.cli.command("populate-menus")
-    def generate_menus_list():
-        menu_list = [
-            {
-                "id": "1",
-                "type": "Dinner",
-            },
-            {
-                "id": "2",
-                "type": "Brunch",
-            },
-        ]
+    @app.cli.command("populate-dishes")  
+    def populate_dishes_command():
+        """Command wrapper for generate_dishes_list""" 
+        generate_dishes_list()
 
-        for menu in menu_list:
-            new_menu = Menu(
-                id=menu['id'],
-                type=menu['type'],
-            )
-
-            db.session.add(new_menu)
-            db.session.commit()
-
-
-    @app.cli.command("populate-dishes")   
     def generate_dishes_list(): 
         dish_list = [
             {
@@ -227,14 +198,28 @@ def setup_commands(app):
                 "ingredients": ["Grilled miso marinated salmon", "Maitake mushrooms", "Shiitake mushrooms", "Shimeji mushrooms"],
                 "created_at": "2024-10-11 23:52:53",
                 "menu_id": "1",
+                "restrictions": {"seafood": True, "soybeans": True},
+                "preferences": {"no_raw_fish": True, "vegan": True, "vegetarian": True, "carnivore": True, "low_sodium": True, "soy_free": True}
             },
-             {
+            {
                 "id": "13",
                 "name": "Gindara Yuan Yaki",
                 "ingredients": ["Grilled black cod", "Yuzu soy sauce"],
                 "created_at": "2024-10-11 23:52:53",
                 "menu_id": "2",
+                "restrictions": {"seafood": True, "soybeans": True},
+                "preferences": {"no_raw_fish": True, "vegan": True, "vegetarian": True, "carnivore": True, "low_sodium": True, "soy_free": True}
             },
+            {
+                "id": "14",
+                "name": "Dish Testing 1",
+                "ingredients": ["Grilled black cod", "Yuzu soy sauce"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "2",
+                "restrictions": {},
+                "preferences": {}
+            },
+            
         ]
 
         # for dish in dish_list:
@@ -263,6 +248,51 @@ def setup_commands(app):
                 ingredient = Ingredient.query.filter_by(name=ingredient_name).first()
                 if ingredient:
                     new_dish.ingredients.append(ingredient)
-
+                else:
+                    new_ingredient = Ingredient(name=ingredient_name)
+                    db.session.add(new_ingredient)
+                    db.session.commit()
+                    db.session.refresh(new_ingredient)
+                    new_dish.ingredients.append(new_ingredient)
+            
             db.session.add(new_dish)
             db.session.commit()
+            db.session.refresh(new_dish)
+
+            dish_restriction = Restriction(**{**dish['restrictions'], "dish_id":new_dish.id})
+            db.session.add(dish_restriction)
+            db.session.commit()
+
+            dish_preference = Preference(**{**dish['preferences'], "dish_id":new_dish.id})
+            db.session.add(dish_preference)
+            db.session.commit()
+
+    @app.cli.command("reset-dishes")
+    def reset_dishes():
+        """Delete all dishes and their restrictions, then repopulate them"""
+        try:
+            # First delete all restrictions (due to foreign key constraints)
+            print("Deleting existing restrictions...")
+            Restriction.query.delete()
+            
+            # Then delete all dish_ingredient associations
+            print("Deleting dish-ingredient associations...")
+            DishIngredient.query.delete()
+            
+            # Then delete all dishes
+            print("Deleting existing dishes...")
+            Dish.query.delete()
+            
+            db.session.commit()
+            print("All dishes and related data deleted successfully")
+
+            # Call the populate-dishes command
+            print("Repopulating dishes...")
+            generate_dishes_list()
+            
+            print("Dishes reset and repopulated successfully!")
+
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            db.session.rollback()
+            raise e

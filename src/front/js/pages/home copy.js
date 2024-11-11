@@ -25,52 +25,6 @@ export const Home = () => {
 		}
 	};
 
-	const filterDishesByUserPreferences = (dishes) => {
-		if (!store.userPreferences || !Array.isArray(dishes)) {
-			console.log("No preferences or dishes:", { 
-				userPreferences: store.userPreferences, 
-				dishes: dishes 
-			});
-			return dishes;
-		}
-	
-		console.log("User Preferences:", store.userPreferences);
-		
-		return dishes.filter(dish => {
-			console.log("Checking dish preferences:", {
-				name: dish.name,
-				preferences: dish.preference
-			});
-	
-			if (!dish.preference) {
-				console.log("No preferences for dish:", dish.name);
-				return true;
-			}
-	
-			const userPreferences = {};
-			Object.entries(store.userPreferences).forEach(([key, value]) => {
-				const snakeKey = key.toLowerCase().replace(/ /g, '_');
-				userPreferences[snakeKey] = value;
-			});
-	
-			console.log("Converted user preferences:", userPreferences);
-	
-			for (const [preference, isPreferred] of Object.entries(userPreferences)) {
-				console.log(`Checking ${preference}:`, {
-					userHasPreference: isPreferred,
-					dishHasPreference: dish.preference[preference]
-				});
-				
-				if (isPreferred && dish.preference[preference]) {
-					console.log(`Filtering out ${dish.name} due to ${preference}`);
-					return false;
-				}
-			}
-			console.log(`Keeping dish: ${dish.name}`);
-			return true;
-		});
-	};
-
 	const filterDishesByUserRestrictions = (dishes) => {
 		if (!store.userRestrictions || !Array.isArray(dishes)) {
 			console.log("No restrictions or dishes:", { 
@@ -102,6 +56,11 @@ export const Home = () => {
 			console.log("Converted user restrictions:", userRestrictions);
 	
 			for (const [restriction, isRestricted] of Object.entries(userRestrictions)) {
+				console.log(`Checking ${restriction}:`, {
+					userHasRestriction: isRestricted,
+					dishHasRestriction: dish.restriction[restriction]
+				});
+				
 				if (isRestricted && dish.restriction[restriction]) {
 					console.log(`Filtering out ${dish.name} due to ${restriction}`);
 					return false;
@@ -118,10 +77,8 @@ export const Home = () => {
 			const resData = await response.json();
 			
 			if (resData.data) {
-				// Apply both filters in sequence
-				const restrictionFilteredDishes = filterDishesByUserRestrictions(resData.data);
-				const finalFilteredDishes = filterDishesByUserPreferences(restrictionFilteredDishes);
-				return finalFilteredDishes;
+				const filteredDishes = filterDishesByUserRestrictions(resData.data);
+				return filteredDishes;
 			}
 			return [];
 		} catch (err) {
@@ -185,7 +142,7 @@ export const Home = () => {
 		if (menus.length > 0 && menuType) {
 			fetchAvailableMenu(menus, menuType);
 		}
-	}, [store.userRestrictions, store.userPreferences]); // Added userPreferences dependency
+	}, [store.userRestrictions]);
 
 	const populateMenu = (menus, menuType) => {
 		setMenuType(menuType);

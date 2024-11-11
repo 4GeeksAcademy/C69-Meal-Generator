@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Menu, Dish, Ingredient, DishIngredient, Restriction, Preference, MenuAvailability
+from api.models import db, User, Menu, Dish, Ingredient, DishIngredient, Restriction, Preference, MenuAvailability, UserRestrictions, UserPreferences
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -269,4 +269,116 @@ def handle_reset_password():
     db.session.commit()
 
     return jsonify({'msg': 'Your password has been successfully reset'}), 200
+
+@api.route('/get-user-restrictions', methods= ['GET'])
+@jwt_required()
+def get_user_restrictions():
+    user= User.query.filter_by(email=get_jwt_identity()).first()
+    restrictions= UserRestrictions.query.filter_by(user_id = user.id).first()
+
+    if not restrictions:
+        new_restrictions = UserRestrictions(
+            user_id = user.id,
+            dairy = False,
+            eggs = False,
+            seafood = False,
+            shellfish = False,
+            wheat = False,
+            soybeans = False,
+            sesame = False,
+            tree_nuts = False,
+            peanuts = False,
+            pork = False,
+            beef = False,
+            alcohol = False
+
+        )
+
+        db.session.add(new_restrictions)
+        db.session.commit()
+        return jsonify(new_restrictions.serialize()), 200
     
+    return jsonify(restrictions.serialize()), 200
+
+@api.route('/edit-user-restrictions', methods = ['PUT'])
+@jwt_required()
+def edit_user_restrictions():
+    request_body = request.get_json()
+    user= User.query.filter_by(email=get_jwt_identity()).first()
+    restrictions= UserRestrictions.query.filter_by(user_id = user.id).first()
+
+    if not restrictions:
+        new_restrictions = UserRestrictions(**{**request_body, "user_id": user.id})
+        db.session.add(new_restrictions)
+        db.session.commit()
+        return jsonify(new_restrictions.serialize()), 201
+    
+    for field in request_body: 
+        if hasattr(restrictions, field):
+            setattr(restrictions, field, request_body[field])
+
+    try:
+        db.session.commit()
+        return jsonify(restrictions.serialize()), 200
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "error updating restrictions", "error": str(e)}), 400
+    
+@api.route('/get-user-preferences', methods=['GET'])
+@jwt_required()
+def get_user_preferences():
+    user = User.query.filter_by(email=get_jwt_identity()).first()
+    preferences = UserPreferences.query.filter_by(user_id = user.id).first()
+
+    if not preferences:
+        new_preferences = UserPreferences(
+            user_id = user.id,
+            no_raw_fish = False,
+            vegan = False,
+            mercury_sensitivity_pregnancy = False,
+            keto_low_carb = False,
+            egg_free = False,
+            no_seaweed = False,
+            vegetarian = False,
+            gluten_intolerance = False,
+            carnivore = False,
+            lactose_intolerance = False,
+            soy_free = False,
+            low_sodium = False,
+
+        )
+
+        db.session.add(new_preferences)
+        db.session.commit()
+        return jsonify(new_preferences.serialize()), 200
+    
+    return jsonify(preferences.serialize()), 200
+
+@api.route('/edit-user-preferences', methods= ['PUT'])
+@jwt_required()
+def edit_user_preferences():
+    request_body = request.get_json()
+    user= User.query.filter_by(email=get_jwt_identity()).first()
+    preferences= UserPreferences.query.filter_by(user_id = user.id).first()
+
+    if not preferences:
+        new_preferences = UserPreferences(**{**request_body, "user_id": user.id})
+        try:
+            db.session.add(new_preferences)
+            db.session.commit()
+            return jsonify({"success": True, "data": new_preferences.serialize()}), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"success": False, "error": str(e)}), 500
+    for field in request_body: 
+        if hasattr(preferences, field):
+            setattr(preferences, field, request_body[field])
+
+    try:
+        db.session.commit()
+        return jsonify({"success": True, "data": preferences.serialize()}), 201
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "error updating ", "error": str(e)}), 400
