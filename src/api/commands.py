@@ -1,6 +1,6 @@
 
 import click
-from api.models import db, User, Ingredient, Dish
+from api.models import db, User, Ingredient, Dish, Menu, Restriction
 
 """
 In this file, you can add as many commands as you want using the @app.cli.command decorator
@@ -34,6 +34,27 @@ def setup_commands(app):
         pass
 
 
+    @app.cli.command("populate-menus")
+    def generate_menus_list():
+        menu_list = [
+            {
+                "id": "1",
+                "type": "Dinner",
+            },
+            {
+                "id": "2",
+                "type": "Brunch",
+            },
+        ]
+
+        for menu in menu_list:
+            new_menu = Menu(
+                id=menu['id'],
+                type=menu['type'],
+            )
+
+            db.session.add(new_menu)
+            db.session.commit()
 
     @app.cli.command("populate-ingredients")   
     def generate_ingredients_list(): 
@@ -56,7 +77,7 @@ def setup_commands(app):
             },
             {
                 "id": "17",
-                "name": "Grilled black cod	",
+                "name": "Grilled black cod",
             },
             {
                 "id": "18",
@@ -174,6 +195,8 @@ def setup_commands(app):
                 "ingredients": ["Grilled miso marinated salmon", "Maitake mushrooms", "Shiitake mushrooms", "Shimeji mushrooms"],
                 "created_at": "2024-10-11 23:52:53",
                 "menu_id": "1",
+                "restrictions": {},
+                "preferences": {},
             },
              {
                 "id": "13",
@@ -181,16 +204,107 @@ def setup_commands(app):
                 "ingredients": ["Grilled black cod", "Yuzu soy sauce"],
                 "created_at": "2024-10-11 23:52:53",
                 "menu_id": "2",
+                "restrictions": {},
+                "preferences": {},
+            },
+            {
+                "id": "14",
+                "name": "Sukiyaki Nabe",
+                "ingredients": ["Sweet soy sauce soup", "Washu beef", "Tofu", "Nappa cabbage", "Shiitake mushrooms", "Burdock", "Carrot", "Scallion"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "1",
+                "restrictions": {},
+                "preferences": {},
+            },
+            {
+                "id": "15",
+                "name": "Wagyu Ishiyaki",
+                "ingredients": ["Sliced wagyu beef", "Vegtables", "Wasabi", "Yuzu kosho", "Miso", "Soy Sauce"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "1",
+                "restrictions": {},
+                "preferences": {},
+            },
+            {
+                "id": "16",
+                "name": "Kama Yaki",
+                "ingredients": ["Grilled fish collar of the day", "Rice"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "1",
+                "restrictions": {},
+                "preferences": {},
+            },
+            {
+                "id": "17",
+                "name": "Unajyu", 
+                "ingredients": ["Grilled eel served with sweet soy sauce", "Rice"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "2",
+                "restrictions": {},
+                "preferences": {},
+            },
+            {
+                "id": "18",
+                "name": "Kamo Soba", 
+                "ingredients": ["Buckwheat noodle soup with grilled duck breast", "Scallion", "Yuzu Zest"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "2",
+                "restrictions": {},
+                "preferences": {},
+            },
+            {
+                "id": "19",
+                "name": "Ten Don",
+                "ingredients": ["Assorted Vegtables", "Shrimp Tempura", "Rice", "Soy Sauce"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "2",
+                "restrictions": {},
+                "preferences": {},
+            },
+            {
+                "id": "20", 
+                "name": "Jidori Garlic Shoyu Donburi",
+                "ingredients": ["Grilled free-range organic chicken thigh", "Soy Sauce", "Rice"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "2",
+                "restrictions": {},
+                "preferences": {},
+            },
+            {
+                "id": "21",
+                "name": "Wagyu Donburi",
+                "ingredients": ["Sliced wagyu beef", "Duck Sauce", "Rice"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "2",
+                "restrictions": {},
+                "preferences": {},
             },
         ]
 
+
         for dish in dish_list:
-            new_dish=Dish(
+            new_dish = Dish(
                 id=dish['id'],
                 name=dish['name'],
-                ingredients=dish['ingredients'],
                 created_at=dish['created_at'],
                 menu_id=dish['menu_id'],
             )
+
+            for ingredient_name in dish['ingredients']:
+                ingredient = Ingredient.query.filter_by(name=ingredient_name).first()
+                if ingredient:
+                    new_dish.ingredients.append(ingredient)
+                else:
+                    new_ingredient = Ingredient(name=ingredient_name)
+                    db.session.add(new_ingredient)
+                    db.session.commit()
+                    db.session.refresh(new_ingredient)
+                    new_dish.ingredients.append(new_ingredient)
+            
             db.session.add(new_dish)
+            db.session.commit()
+            db.session.refresh(new_dish)
+
+            dish_restriction = Restriction(**{**dish['restrictions'], "dish_id":new_dish.id})
+            db.session.add(dish_restriction)
             db.session.commit()

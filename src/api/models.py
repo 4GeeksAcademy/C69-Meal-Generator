@@ -22,6 +22,47 @@ class User(db.Model):
             "email": self.email,
         }
     
+class UserRestrictions(db.Model):
+    __tablename__ = "user_restrictions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id =db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
+    ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
+    dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
+    dairy = db.Column(db.Boolean, default=False, nullable=True)
+    eggs = db.Column(db.Boolean, default=False, nullable=True)
+    seafood = db.Column(db.Boolean, default=False, nullable=True)
+    shellfish = db.Column(db.Boolean, default=False, nullable=True)
+    wheat = db.Column(db.Boolean, default=False, nullable=True)
+    soybeans = db.Column(db.Boolean, default=False, nullable=True)
+    sesame = db.Column(db.Boolean, default=False, nullable=True)
+    tree_nuts = db.Column(db.Boolean, default=False, nullable=True)
+    peanuts = db.Column(db.Boolean, default=False, nullable=True)
+    pork = db.Column(db.Boolean, default=False, nullable=True)
+    beef = db.Column(db.Boolean, default=False, nullable=True)
+    alcohol = db.Column(db.Boolean, default=False, nullable=True)
+
+    def __repr__(self):
+        return f'<UserRestrictions {self.id}:>'
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "dairy": self.dairy,
+            "eggs": self.eggs,
+            "seafood": self.seafood,
+            "shellfish": self.shellfish,
+            "wheat": self.wheat,
+            "soybeans": self.soybeans,
+            "sesame": self.sesame,
+            "tree_nuts": self.tree_nuts,
+            "peanuts": self.peanuts,
+            "pork": self.pork,
+            "beef": self.beef,
+            "alcohol": self.alcohol
+        }
+    
 
 class Menu(db.Model):
     __tablename__ = "menu"
@@ -123,16 +164,29 @@ class DishIngredient(db.Model):
             return f'<DishIngredient {self.id}:>'
 
 class Restriction(db.Model):
-     __tablename__ = "restriction"
+    __tablename__ = "restriction"
 
-     id = db.Column(db.Integer, primary_key=True)
-     user_id =db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
-     ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id =db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
+    ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
+    dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
+    dairy = db.Column(db.Boolean, default=False, nullable=True)
+    eggs = db.Column(db.Boolean, default=False, nullable=True)
+    seafood = db.Column(db.Boolean, default=False, nullable=True)
+    shellfish = db.Column(db.Boolean, default=False, nullable=True)
+    wheat = db.Column(db.Boolean, default=False, nullable=True)
+    soybeans = db.Column(db.Boolean, default=False, nullable=True)
+    sesame = db.Column(db.Boolean, default=False, nullable=True)
+    tree_nuts = db.Column(db.Boolean, default=False, nullable=True)
+    peanuts = db.Column(db.Boolean, default=False, nullable=True)
+    pork = db.Column(db.Boolean, default=False, nullable=True)
+    beef = db.Column(db.Boolean, default=False, nullable=True)
+    alcohol = db.Column(db.Boolean, default=False, nullable=True)
+    dish = db.relationship("Dish", backref="restriction")
 
-     def __repr__(self):
-            return f'<Restriction {self.id}:>'
-     
-
+    def __repr__(self):
+        return f'<Restriction {self.id}:>'
+    
 class Preference(db.Model):
      __tablename__ = "preference"
 
