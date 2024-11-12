@@ -10,11 +10,11 @@ import ToggleSwitch from '../component/ToggleSwitch';
 // const foodReligionRestrictions =[
 //     "pork", "beef", "alcohol"
 // ]
-// const foodPreferences = [
-//     "No Raw Fish", "Vegetarian", "Vegan", "Gluten Intolerance","Mercury Sensitvity / Pregnancy",
-//     "Carnivore", "Keto / Low Carb", "Lactose Intolerance", "Egg Free", "Soy Free", "No Seaweed",
-//     "Low Sodium"
-// ]
+const foodPreferences = [
+    "No Raw Fish", "Vegetarian", "Vegan", "Gluten Intolerance","Mercury Sensitvity / Pregnancy",
+    "Carnivore", "Keto / Low Carb", "Lactose Intolerance", "Egg Free", "Soy Free", "No Seaweed",
+    "Low Sodium"
+]
 
 
 export const Profile = () => {
@@ -22,16 +22,8 @@ export const Profile = () => {
     const [activeTab, setActiveTab] = useState("preferences")
     // const [restrictions, setRestrictions] = useState({});
     const [localRestrictions, setLocalRestrictions] = useState({});
-    const [localPreferences, setLocalPreferences] = useState({});
     const [saveStatus, setSaveStatus] = useState("");
-    const [savePreferencesStatus, setPreferencesStatus] = useState("");
 
-const preferenceOptions = [
-    "No Raw Fish", "Vegetarian", "Vegan", "Gluten Intolerance","Mercury Sensitivity Pregnancy",
-    "Carnivore", "Keto Low Carb", "Lactose Intolerance", "Egg Free", "Soy Free", "No Seaweed",
-    "Low Sodium"
-]
-    
     useEffect(() => {
         if (store.userRestrictions) {
             setLocalRestrictions(store.userRestrictions);
@@ -39,13 +31,6 @@ const preferenceOptions = [
             actions.getUserRestrictions();
         }
     }, [store.userRestrictions])
-    useEffect(() => {
-        if (store.userPreferences) {
-            setLocalPreferences(store.userPreferences);
-        } else {
-            actions.getUserPreferences();
-        }
-    }, [store.userPreferences])
     
     // const handleToggle = (restriction) => {
     //     setRestrictions(prev => ({
@@ -57,13 +42,6 @@ const preferenceOptions = [
         setLocalRestrictions(prev => ({
             ...prev,
             [restriction]: !prev[restriction]
-        }));
-    };
-    const handlePreferencesToggle = (preference) => {
-        const snakeKey = preference.toLowerCase().replace(/ /g, '_');
-        setLocalPreferences(prev => ({
-            ...prev,
-            [snakeKey]: !prev[snakeKey]
         }));
     };
 
@@ -86,20 +64,6 @@ const preferenceOptions = [
         setTimeout(() => setSaveStatus(""), 3000);
       
     };
-    const handleSavePreferences = async () => {
-        setPreferencesStatus("saving...");
-
-        const result = await actions.updateUserPreferences(localPreferences);
-
-        if (result.success) {
-            setPreferencesStatus("Saved Successfully");
-        } else {
-            setPreferencesStatus(result.error || "error saving preferences")
-        }
-
-        setTimeout(() => setPreferencesStatus(""), 3000);
-      
-    };
 
     const getReligiousRestrictions = () => {
         return Object.entries(localRestrictions).filter(([key]) => 
@@ -112,8 +76,6 @@ const preferenceOptions = [
             !["Pork", "Beef", "Alcohol"].includes(key)
         );
     };
-
-    
 
 
     return (
@@ -154,38 +116,34 @@ const preferenceOptions = [
                 <div className="tab-content mt-4">
                     {activeTab === 'preferences' && (
                         <div className="tab-pane active d-flex justify-content-center align-items-center flex-column">
-                        <h5 className="mb-4 text-center">Preferences</h5>
-                        <div className="row w-50">
-                            {preferenceOptions.map((preference) => {
-                                // Define snakeKey inside the map function
-                                const snakeKey = preference.toLowerCase().replace(/ /g, '_');
-                                return (
+                            <h5 className="mb-4 text-center">Preferences</h5>
+                            <div className="row w-50">
+                                {foodPreferences.map((preference) => (
                                     <div key={preference} className="col-md-6 mb-3 d-flex justify-content-center">
                                         <div className="d-flex align-item-center justify-content-between border rounded p-2 w-100">
                                             <span className="text-capitalize">
                                                 {preference}
                                             </span>
-                                            <input 
-                                                type="checkbox" 
-                                                className="form-check-input"   
-                                                checked={localPreferences[snakeKey] || false}
-                                                onChange={() => handlePreferencesToggle(preference)} 
-                                            />
+                                            {/* <div
+                                                className={`btn btn-sm ${restrictions[restriction] ? "btn-primary" : "btn-outline-primary"}`}
+                                                onClick={() => handleToggle(restriction)}
+                                            >
+
+                                            </div> */}
+                                            {/* <ToggleSwitch
+                                                isOn={restrictions[preference] || false}
+                                                onToggle={() => handleToggle(preference)}
+                                            /> */}
+                                            <input type="checkbox"></input>
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </div>
-                        <button onClick={handleSavePreferences} className="btn btn-primary mt-3 mb-2">
-                            <i className="fa-solid fa-cloud me-2"></i>
-                            Save Preferences
-                        </button>
-                        {savePreferencesStatus && (
-                            <div className={`alert ${savePreferencesStatus.includes("Error") ? "alert-danger" : "alert-success"} mt-2`}>
-                                {savePreferencesStatus}
+                                ))}
                             </div>
-                        )}
-                    </div>
+                            <button onClick={handleSave} className="btn btn-primary mt-3 mb-2">
+                                <i className="fa-solid fa-cloud me-2"></i>
+                                Save Preferences
+                            </button>
+                        </div>
                     )}
 
                     {activeTab === 'restrictions' && (

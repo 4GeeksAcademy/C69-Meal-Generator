@@ -30,7 +30,7 @@ export const ForgotPassword = () => {
         <form className="forgot-pass-container d-flex row justify-content-center p-5" onSubmit={handleSubmit}>
             <h1 className="forgot-pass-header text-center">Forgot Password</h1>
             <div className="mb-3 col-7 py-5">
-                <label for="exampleInputEmail1" className="form-label">Email address</label>
+                <label for="exampleInputEmail1" className="form-label">Email Address</label>
                 <input
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
@@ -40,7 +40,6 @@ export const ForgotPassword = () => {
                     id="exampleInputEmail1"
                     aria-describedby="emailHelp"
                     required />
-                <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
                 <div className="submit-btn py-4 d-flex">
 					<button
 						type="submit"

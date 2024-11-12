@@ -6,11 +6,14 @@ db = SQLAlchemy()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    
     email = db.Column(db.String(120), unique=True, nullable=False)
+    first_name = db.Column(db.String(100), unique=False, nullable=False)
+    last_name = db.Column(db.String(100), unique=False, nullable=False)
     password = db.Column(db.String(255), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    ingredient_restrictions = db.relationship('Ingredient', secondary="restriction", back_populates="restricted_by_users")
-    ingredient_preferences = db.relationship('Ingredient', secondary="preference", back_populates="preferred_by_users")
+    # ingredient_restrictions = db.relationship('Ingredient', secondary="restriction", back_populates="restricted_by_users")
+    # ingredient_preferences = db.relationship('Ingredient', secondary="preference", back_populates="preferred_by_users")
     
 
     def __repr__(self):
@@ -20,15 +23,18 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "is_active": self.is_active,
+            # "ingredient_restrictions": [ingredient.serialize() for ingredient in self.ingredient_restrictions],
+            # "ingredient_preferences": [ingredient.serialize() for ingredient in self.ingredient_preferences],
+
         }
-    
 class UserRestrictions(db.Model):
     __tablename__ = "user_restrictions"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id =db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
-    ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
-    dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     dairy = db.Column(db.Boolean, default=False, nullable=True)
     eggs = db.Column(db.Boolean, default=False, nullable=True)
     seafood = db.Column(db.Boolean, default=False, nullable=True)
@@ -41,6 +47,7 @@ class UserRestrictions(db.Model):
     pork = db.Column(db.Boolean, default=False, nullable=True)
     beef = db.Column(db.Boolean, default=False, nullable=True)
     alcohol = db.Column(db.Boolean, default=False, nullable=True)
+    user = db.relationship("User", backref="restrictions")
 
     def __repr__(self):
         return f'<UserRestrictions {self.id}:>'
@@ -62,7 +69,47 @@ class UserRestrictions(db.Model):
             "beef": self.beef,
             "alcohol": self.alcohol
         }
+
+class UserPreferences(db.Model):
+    __tablename__ = "user_preferences"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id =db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
+    no_raw_fish = db.Column(db.Boolean, default=False, nullable=True)
+    vegan = db.Column(db.Boolean, default=False, nullable=True)
+    mercury_sensitivity_pregnancy = db.Column(db.Boolean, default=False, nullable=True)
+    keto_low_carb = db.Column(db.Boolean, default=False, nullable=True)
+    egg_free = db.Column(db.Boolean, default=False, nullable=True)
+    no_seaweed = db.Column(db.Boolean, default=False, nullable=True)
+    vegetarian = db.Column(db.Boolean, default=False, nullable=True)
+    gluten_intolerance = db.Column(db.Boolean, default=False, nullable=True)
+    carnivore = db.Column(db.Boolean, default=False, nullable=True)
+    lactose_intolerance = db.Column(db.Boolean, default=False, nullable=True)
+    soy_free = db.Column(db.Boolean, default=False, nullable=True)
+    low_sodium = db.Column(db.Boolean, default=False, nullable=True)
+    user = db.relationship("User", backref="preferences")
+
+    def __repr__(self):
+            return f'<Preferences {self.id}:>'
     
+    def serialize(self):
+         return {
+              "id": self.id,
+              "user_id": self.user_id,
+              "no_raw_fish": self.no_raw_fish,
+              "vegan": self.vegan,
+              "mercury_sensitivity_pregnancy": self.mercury_sensitivity_pregnancy,
+              "keto_low_carb": self.keto_low_carb,
+              "egg_free": self.egg_free,
+              "no_seaweed": self.no_seaweed,
+              "vegetarian": self.vegetarian,
+              "gluten_intolerance": self.gluten_intolerance,
+              "carnivore": self.carnivore,
+              "lactose_intolerance": self.lactose_intolerance,
+              "soy_free": self.soy_free,
+              "low_sodium": self.low_sodium
+
+         }
 
 class Menu(db.Model):
     __tablename__ = "menu"
@@ -114,21 +161,26 @@ class Dish(db.Model):
     name = db.Column(db.String(120), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=func.now())
     ingredients = db.relationship('Ingredient', secondary="dish_ingredient", back_populates="dishes", order_by="DishIngredient.ingredient_order")
+    restriction = db.relationship('Restriction', uselist=False, backref="dish", lazy='joined')
+    preference = db.relationship('Preference', uselist=False, backref="dish", lazy='joined')
 
     def __repr__(self):
         return f'<Dish {self.name}:>'
     
     def serialize(self):
-        ingredients = [ingredient.serialize() for ingredient in self.ingredients]
         # sorted_ingredients = sorted(ingredients, key=lambda ingredient : ingredient["ingredient_order"])
+        restriction_data = self.restriction.serialize() if self.restriction else None
+        preference_data = self.preference.serialize() if self.preference else None
         return {
-        "id": self.id,
-        "menu_id": self.menu_id,
-        "name": self.name,
-        "created_at": self.created_at,
-        # "ingredients": sorted_ingredients, 
-        "ingredients": ingredients,
-    }
+            "id": self.id,
+            "menu_id": self.menu_id,
+            "name": self.name,
+            "created_at": self.created_at,
+            # "ingredients": sorted_ingredients, 
+            "ingredients": [ingredient.serialize() for ingredient in self.ingredients],
+            "restriction": restriction_data,
+            "preference": preference_data
+        }
 
 class Ingredient(db.Model):
     __tablename__ = "ingredient"
@@ -137,8 +189,8 @@ class Ingredient(db.Model):
     name = db.Column(db.String(120), unique=True, nullable=False)
     calories = db.Column(db.Float(precision=2),unique=False, nullable=True)
     dishes = db.relationship('Dish', secondary="dish_ingredient", back_populates="ingredients")
-    restricted_by_users = db.relationship('User', secondary='restriction', back_populates="ingredient_restrictions")
-    preferred_by_users = db.relationship('User', secondary="preference", back_populates="ingredient_preferences")
+    # restricted_by_users = db.relationship('User', secondary='restriction', back_populates="ingredient_restrictions")
+    # preferred_by_users = db.relationship('User', secondary="preference", back_populates="ingredient_preferences")
     # add protein
 
     def __repr__(self):
@@ -167,8 +219,8 @@ class Restriction(db.Model):
     __tablename__ = "restriction"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id =db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
-    ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
+    # user_id =db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
+    # ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
     dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
     dairy = db.Column(db.Boolean, default=False, nullable=True)
     eggs = db.Column(db.Boolean, default=False, nullable=True)
@@ -182,19 +234,69 @@ class Restriction(db.Model):
     pork = db.Column(db.Boolean, default=False, nullable=True)
     beef = db.Column(db.Boolean, default=False, nullable=True)
     alcohol = db.Column(db.Boolean, default=False, nullable=True)
-    dish = db.relationship("Dish", backref="restriction")
 
     def __repr__(self):
         return f'<Restriction {self.id}:>'
     
+    def serialize(self):
+        return {
+            "id": self.id,
+            "dish_id": self.dish_id,
+            "dairy": self.dairy,
+            "eggs": self.eggs,
+            "seafood": self.seafood,
+            "shellfish": self.shellfish,
+            "wheat": self.wheat,
+            "soybeans": self.soybeans,
+            "sesame": self.sesame,
+            "tree_nuts": self.tree_nuts,
+            "peanuts": self.peanuts,
+            "pork": self.pork,
+            "beef": self.beef,
+            "alcohol": self.alcohol
+        }
+     
+
 class Preference(db.Model):
-     __tablename__ = "preference"
+    __tablename__ = "preference"
 
-     id = db.Column(db.Integer, primary_key=True)
-     user_id =db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
-     ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    #  user_id =db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
+    #  ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
+    dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
+    no_raw_fish = db.Column(db.Boolean, default=False, nullable=True)
+    vegan = db.Column(db.Boolean, default=False, nullable=True)
+    mercury_sensitivity_pregnancy = db.Column(db.Boolean, default=False, nullable=True)
+    keto_low_carb = db.Column(db.Boolean, default=False, nullable=True)
+    egg_free = db.Column(db.Boolean, default=False, nullable=True)
+    no_seaweed = db.Column(db.Boolean, default=False, nullable=True)
+    vegetarian = db.Column(db.Boolean, default=False, nullable=True)
+    gluten_intolerance = db.Column(db.Boolean, default=False, nullable=True)
+    carnivore = db.Column(db.Boolean, default=False, nullable=True)
+    lactose_intolerance = db.Column(db.Boolean, default=False, nullable=True)
+    soy_free = db.Column(db.Boolean, default=False, nullable=True)
+    low_sodium = db.Column(db.Boolean, default=False, nullable=True)
 
-     def __repr__(self):
+    def __repr__(self):
             return f'<Preferences {self.id}:>'
+    
+    def serialize(self):
+         return {
+              "id": self.id,
+              "dish_id": self.dish_id,
+              "no_raw_fish": self.no_raw_fish,
+              "vegan": self.vegan,
+              "mercury_sensitivity_pregnancy": self.mercury_sensitivity_pregnancy,
+              "keto_low_carb": self.keto_low_carb,
+              "egg_free": self.egg_free,
+              "no_seaweed": self.no_seaweed,
+              "vegetarian": self.vegetarian,
+              "gluten_intolerance": self.gluten_intolerance,
+              "carnivore": self.carnivore,
+              "lactose_intolerance": self.lactose_intolerance,
+              "soy_free": self.soy_free,
+              "low_sodium": self.low_sodium
+
+         }
     
 

@@ -1,0 +1,99 @@
+.profile-page-top-div {
+  color: white !important;
+  margin-top: 1rem;
+}
+
+.profile-page-div {
+  color: white !important;
+  margin-top: 1rem;
+  border: 1px, solid, white;
+  border-radius: .5rem;
+  padding-top: .25rem;
+}
+
+/* .profile-page-div .example { */
+
+/* } */
+
+.profile-page-div .nav-link:focus,
+.profile-page-div .nav-link:hover,
+.nav-link {
+  color: white;
+}
+
+/* -------------------------------------custom toggle switch------------------------------------- */
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked+.slider {
+  background-color: #2196F3;
+}
+
+input:checked+.slider:before {
+  transform: translateX(26px);
+}
+
+.slider .on,
+.slider .off {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: .4s;
+}
+
+.slider .on {
+  left: 8px;
+  color: black;
+  opacity: 0;
+}
+
+.slider .off {
+  right: 8px;
+  color: red;
+}
+
+input:checked+.slider .on {
+  opacity: 1;
+}
+
+input:checked+.slider .off {
+  opacity: 0;
+}
