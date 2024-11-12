@@ -307,3 +307,7 @@ def setup_commands(app):
             dish_restriction = Restriction(**{**dish['restrictions'], "dish_id":new_dish.id})
             db.session.add(dish_restriction)
             db.session.commit()
+
+            dish_preference = Preference(**{**dish['preferences'], "dish_id":new_dish.id})
+            db.session.add(dish_preference)
+            db.session.commit()
