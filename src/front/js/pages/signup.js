@@ -8,6 +8,8 @@ import "../../styles/signup.css";
 export const SignUp = () => {
 	const { actions } = useContext(Context);
 	const [email, setEmail] = useState('');
+	const [firstName, setFirstName] = useState('');
+	const [lastName, setLastName] = useState('');
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const navigate = useNavigate()
@@ -32,7 +34,7 @@ export const SignUp = () => {
 		}
 
 		// Proceed with signUp after validation
-		const response = await actions.signup(email, password);
+		const response = await actions.signup(email, password, firstName, lastName);
 
 		if (response) {
 			alert('Account has been created');
@@ -55,6 +57,28 @@ export const SignUp = () => {
 						type="email"
 						className="form-control"
 						id="inputEmail4"
+						required />
+				</div>
+				<div className="col-md-8">
+					<label for="firstName" className="form-label">First Name</label>
+					<input
+						value={firstName}
+						onChange={(e) => setFirstName(e.target.value)}
+						name='firstName'
+						type="text"
+						className="form-control"
+						id="firstName"
+						required />
+				</div>
+				<div className="col-md-8">
+					<label for="lastName" className="form-label">Last Name</label>
+					<input
+						value={lastName}
+						onChange={(e) => setLastName(e.target.value)}
+						name='lastName'
+						type="text"
+						className="form-control"
+						id="lastName"
 						required />
 				</div>
 				<div className="col-md-8">
@@ -83,7 +107,7 @@ export const SignUp = () => {
 					<button href="/"
 						class="btn btn-outline-light"
 						role="button"
-						>Submit</button>
+					>Submit</button>
 				</p>
 
 			</form>
