@@ -27,23 +27,23 @@ export const Home = () => {
 
 	const filterDishesByUserPreferences = (dishes) => {
 		if (!store.userPreferences || !Array.isArray(dishes)) {
-			console.log("No preferences or dishes:", { 
-				userPreferences: store.userPreferences, 
-				dishes: dishes 
-			});
+			// console.log("No preferences or dishes:", { 
+			// 	userPreferences: store.userPreferences, 
+			// 	dishes: dishes 
+			// });
 			return dishes;
 		}
 	
-		console.log("User Preferences:", store.userPreferences);
+		// console.log("User Preferences:", store.userPreferences);
 		
 		return dishes.filter(dish => {
-			console.log("Checking dish preferences:", {
-				name: dish.name,
-				preferences: dish.preference
-			});
+			// console.log("Checking dish preferences:", {
+			// 	name: dish.name,
+			// 	preferences: dish.preference
+			// });
 	
 			if (!dish.preference) {
-				console.log("No preferences for dish:", dish.name);
+				// console.log("No preferences for dish:", dish.name);
 				return true;
 			}
 	
@@ -56,40 +56,40 @@ export const Home = () => {
 			console.log("Converted user preferences:", userPreferences);
 	
 			for (const [preference, isPreferred] of Object.entries(userPreferences)) {
-				console.log(`Checking ${preference}:`, {
-					userHasPreference: isPreferred,
-					dishHasPreference: dish.preference[preference]
-				});
+				// console.log(`Checking ${preference}:`, {
+				// 	userHasPreference: isPreferred,
+				// 	dishHasPreference: dish.preference[preference]
+				// });
 				
 				if (isPreferred && dish.preference[preference]) {
-					console.log(`Filtering out ${dish.name} due to ${preference}`);
+					// console.log(`Filtering out ${dish.name} due to ${preference}`);
 					return false;
 				}
 			}
-			console.log(`Keeping dish: ${dish.name}`);
+			// console.log(`Keeping dish: ${dish.name}`);
 			return true;
 		});
 	};
 
 	const filterDishesByUserRestrictions = (dishes) => {
 		if (!store.userRestrictions || !Array.isArray(dishes)) {
-			console.log("No restrictions or dishes:", { 
-				userRestrictions: store.userRestrictions, 
-				dishes: dishes 
-			});
+			// console.log("No restrictions or dishes:", { 
+			// 	userRestrictions: store.userRestrictions, 
+			// 	dishes: dishes 
+			// });
 			return dishes;
 		}
 	
-		console.log("User Restrictions:", store.userRestrictions);
+		// console.log("User Restrictions:", store.userRestrictions);
 		
 		return dishes.filter(dish => {
-			console.log("Checking dish:", {
-				name: dish.name,
-				restrictions: dish.restriction
-			});
+			// console.log("Checking dish:", {
+			// 	name: dish.name,
+			// 	restrictions: dish.restriction
+			// });
 	
 			if (!dish.restriction) {
-				console.log("No restrictions for dish:", dish.name);
+				// console.log("No restrictions for dish:", dish.name);
 				return true;
 			}
 	
@@ -107,7 +107,7 @@ export const Home = () => {
 					return false;
 				}
 			}
-			console.log(`Keeping dish: ${dish.name}`);
+			// console.log(`Keeping dish: ${dish.name}`);
 			return true;
 		});
 	};
