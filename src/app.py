@@ -12,7 +12,7 @@ from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
 from api.config import Config
-from api.mail_setup import init_mail, mail
+from api.email_setup import init_mail, mail
 
 app = Flask(__name__)
 app.config.from_object(Config)

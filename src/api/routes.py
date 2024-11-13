@@ -8,7 +8,7 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, decode_token, JWTManager
-from email_util import send_reset_email
+from api.email_utils import send_reset_email
 
 api = Blueprint('api', __name__)
 
