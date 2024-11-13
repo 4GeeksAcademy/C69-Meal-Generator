@@ -2,7 +2,7 @@ from flask_mail import Message;
 from mail_setup import mail;
 
 def send_reset_email(email, token):
-    reset_link = f"https://glorious-system-r4r4jxvpw7rwf5ppj-3000.app.github.dev/reset-password?token={token}"
+    reset_link = "https://glorious-system-r4r4jxvpw7rwf5ppj-3000.app.github.dev/reset-password?token={token}"
     subject = "TOWA's Interactive Menu Password Reset"
     body = f"""
     Hello, 
