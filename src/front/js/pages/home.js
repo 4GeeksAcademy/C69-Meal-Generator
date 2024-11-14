@@ -15,8 +15,13 @@ export const Home = () => {
 
 	const fetchJoke = async () => {
 		try {
-			const jokeData = await fetch("https://official-joke-api.appspot.com/jokes/random")
-			// const jokeData = await joke.json()
+			const joke = await fetch("https://official-joke-api.appspot.com/jokes/random", {
+				mode: "cors",
+				header: {
+					"Accept": "application/json"
+				}
+			})
+			const jokeData = await joke.json()
 			setJoke(jokeData);
 		} catch (err) {
 			setError("error fetching joke");
