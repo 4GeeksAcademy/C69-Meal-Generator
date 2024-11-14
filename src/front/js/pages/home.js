@@ -10,6 +10,23 @@ export const Home = () => {
 	const [error, setError] = useState(null);
 	const [menus, setMenus] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [joke, setJoke] = useState(null);
+
+
+	const fetchJoke = async () => {
+		try {
+			const jokeData = await fetch("https://official-joke-api.appspot.com/jokes/random")
+			// const jokeData = await joke.json()
+			setJoke(jokeData);
+		} catch (err) {
+			setError("error fetching joke");
+			console.log(err);
+			return [];
+		}
+	}
+	useEffect(() => {
+		fetchJoke()
+	}, [])
 
 	const fetchMenus = async () => {
 		try {
@@ -194,6 +211,14 @@ export const Home = () => {
 
 	return (
 		<div className="overallWebsite text-center">
+			<div className="joke"> 
+				{joke && (
+					<div>
+						<p>{joke.setup}</p>
+						<p><em>{joke.punchline}</em></p>
+					</div>
+				)}
+			</div>
 			<p className="toggle-menu-buttons d-inline-flex gap">
 				<button
 					type="button"
