@@ -240,7 +240,7 @@ def setup_commands(app):
                 "created_at": "2024-10-11 23:52:53",
                 "menu_id": "2",
                 "restrictions": {'soybeans':True, 'seafood':True},
-                "preferences": {'vegan':True, 'vegetarian':True, 'gluten_intolerance':True, 'soy_free':True, 'keto_low_carb':True},
+                "preferences": {'vegan':True, 'vegetarian':True, 'gluten_intolerance':True, 'soy_free':True, 'keto_low_carb':True, 'kosher':True},
             },
             {
                 "id": "18",
@@ -258,7 +258,7 @@ def setup_commands(app):
                 "created_at": "2024-10-11 23:52:53",
                 "menu_id": "2",
                 "restrictions": {'seafood':True, 'shellfish':True, 'wheat':True, 'soybeans':True},
-                "preferences": {'vegan':True, 'vegetarian':True, 'gluten_intolerance':True, 'soy_free':True, 'keto_low_carb':True},
+                "preferences": {'vegan':True, 'vegetarian':True, 'gluten_intolerance':True, 'soy_free':True, 'keto_low_carb':True, 'kosher':True},
             },
             {
                 "id": "20", 
