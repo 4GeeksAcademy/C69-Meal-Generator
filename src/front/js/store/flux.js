@@ -208,12 +208,19 @@ const getState = ({ getStore, getActions, setStore }) => {
 			
 			logout: () => {
 				localStorage.removeItem("token");
+				localStorage.removeItem("jwt-token");
 				localStorage.removeItem("currentUser");
 				localStorage.removeItem("userRestrictions");
-				setStore({ token: null, user: null, userRestrictions: null});
+				localStorage.removeItem("userPreferences");
+
+				// Or alternatively, use clear() to remove everything
+				// localStorage.clear();
+
+				setStore({ token: null, user: null, userRestrictions: null, userPreferences: null});
 			},
 		},
 	};
 }
 
 export default getState
+

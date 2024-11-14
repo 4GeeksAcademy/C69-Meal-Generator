@@ -1,5 +1,5 @@
 from flask_mail import Message;
-from mail_setup import mail;
+from api.mail_setup import mail;
 
 def send_reset_email(email, token):
     reset_link = "https://glorious-system-r4r4jxvpw7rwf5ppj-3000.app.github.dev/reset-password?token={token}"
