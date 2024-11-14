@@ -219,6 +219,7 @@ export const Home = () => {
 			<div className="joke"> 
 				{joke && (
 					<div>
+						<p>There's a Japanese saying "笑う門には福来たる" (warau kado niwa fuku kitaru) which means "good fortune/happiness comes to those who smile/laugh." On that note...</p>
 						<p>{joke.setup}</p>
 						<p><em>{joke.punchline}</em></p>
 					</div>
