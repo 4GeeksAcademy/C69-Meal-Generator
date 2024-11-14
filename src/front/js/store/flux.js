@@ -9,7 +9,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 		actions: {
 			signup: async (email, password, firstName, lastName) => {
 				try {
-					const response = await fetch(process.env.BACKEND_URL + '/api/sign-up', {
+					const response = await fetch(process.env.BACKEND_URL + '/signup', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({
@@ -29,7 +29,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			login: async (email, password) => {
 				try {
-					const response = await fetch(process.env.BACKEND_URL + '/api/log-in', {
+					const response = await fetch(process.env.BACKEND_URL + '/login', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({
@@ -39,7 +39,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						})
 					})
 					const data = await response.json();
-					// localStorage.setItem('jwt-token', data.token);
+					localStorage.setItem('jwt-token', data.token);
 					if (response.status === 200) {
 						localStorage.setItem('token', data.token);
 						localStorage.setItem("currentUser", JSON.stringify(data.user))
@@ -61,7 +61,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				try {
 					const token = localStorage.getItem('jwt-token');
 
-					const resp = await fetch(process.env.BACKEND_URL + '/api/private', {
+					const resp = await fetch(process.env.BACKEND_URL + '/private', {
 						method: 'GET',
 						headers: {
 							"Content-Type": 'application/json',
@@ -89,7 +89,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const store = getStore();
 				if (!store.token) return;
 				try {
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/get-user-restrictions`, {
+					const resp = await fetch(`${process.env.BACKEND_URL}/get-user-restrictions`, {
 						headers: { "Authorization": `Bearer ${store.token}`}
 					});
 					if(resp.ok) {
@@ -124,7 +124,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				});
 
 				try {
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/edit-user-restrictions`, {
+					const resp = await fetch(`${process.env.BACKEND_URL}/edit-user-restrictions`, {
 						method: 'PUT',
 						headers: {
 							"Content-Type": "application/json",
@@ -149,7 +149,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const store = getStore();
 				if (!store.token) return;
 				try {
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/get-user-preferences`, {
+					const resp = await fetch(`${process.env.BACKEND_URL}/get-user-preferences`, {
 						headers: { "Authorization": `Bearer ${store.token}`}
 					});
 					if(resp.ok) {
@@ -184,7 +184,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				});
 
 				try {
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/edit-user-preferences`, {
+					const resp = await fetch(`${process.env.BACKEND_URL}/edit-user-preferences`, {
 						method: 'PUT',
 						headers: {
 							"Content-Type": "application/json",

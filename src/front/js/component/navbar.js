@@ -34,8 +34,8 @@ export const Navbar = () => {
 
 			) : (
 				<>
-					<div className="login ml-3 col-3 px-5">
-						<Link to="/login">Log-In</Link>
+					<div className="log-in ml-3 col-3 px-5">
+						<Link to="/-">Log-In</Link>
 					</div>
 					<div className="signup ml-3 col-1">
 						<Link to="/signup">Sign up</Link>

@@ -10,7 +10,10 @@ import datetime
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, decode_token, JWTManager
 from api.email_utils import send_reset_email
 
+app = Flask(__name__)
+
 api = Blueprint('api', __name__)
+
 
 # Allow CORS requests to this API
 CORS(api)
@@ -193,7 +196,7 @@ def handle_ingredient_order(dish_id, ingredient_id):
     
 
 
-@api.route('/sign-up', methods=['POST'])
+@api.route('/signup', methods=['POST'])
 def handle_sign_up():
     email = request.json.get('email', None)
     password = request.json.get('password', None)
@@ -210,7 +213,7 @@ def handle_sign_up():
 
     return jsonify({'msg':'User created successfully'}), 201
 
-@api.route('/log-in', methods=['POST'])
+@api.route('/login', methods=['POST'])
 def handle_log_in():
     email = request.json.get('email', None)
     password = request.json.get('password', None)
