@@ -4,6 +4,31 @@ from sqlalchemy.sql import func
 
 db = SQLAlchemy()
 
+class Favorite(db.Model):
+    __tablename__ = "favorite"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=func.now())
+    
+    # Relationships
+    user = db.relationship("User", back_populates="favorites")
+    dish = db.relationship("Dish", back_populates="favorited_by")
+    
+    def __repr__(self):
+        return f'<Favorite {self.user_id}:{self.dish_id}>'
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "dish_id": self.dish_id,
+            "created_at": self.created_at.isoformat(),
+            "dish": self.dish.serialize()
+        }
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
@@ -14,6 +39,8 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     # ingredient_restrictions = db.relationship('Ingredient', secondary="restriction", back_populates="restricted_by_users")
     # ingredient_preferences = db.relationship('Ingredient', secondary="preference", back_populates="preferred_by_users")
+
+    favorites = db.relationship("Favorite", back_populates="user", cascade="all, delete-orphan")
     
 
     def __repr__(self):
@@ -163,6 +190,8 @@ class Dish(db.Model):
     ingredients = db.relationship('Ingredient', secondary="dish_ingredient", back_populates="dishes", order_by="DishIngredient.ingredient_order")
     restriction = db.relationship('Restriction', uselist=False, backref="dish", lazy='joined')
     preference = db.relationship('Preference', uselist=False, backref="dish", lazy='joined')
+    favorited_by = db.relationship("Favorite", back_populates="dish", cascade="all, delete-orphan")
+
 
     def __repr__(self):
         return f'<Dish {self.name}:>'

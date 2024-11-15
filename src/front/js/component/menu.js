@@ -15,6 +15,9 @@ export const Menu = (props) => {
                     <ul>
                         {dishes.map(dish => (
                             <li key={dish.id}>
+                                <button className="btn btn-light">
+                                    <i className="fa-regular fa-star" />
+                                </button>
                                 <h2>{dish.name}</h2>
                                 <div>
                                     {dish.ingredients.map(ingredient => ingredient.name).join(', ')}

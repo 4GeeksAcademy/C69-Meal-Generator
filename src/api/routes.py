@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Menu, Dish, Ingredient, DishIngredient, Restriction, Preference, MenuAvailability, UserRestrictions, UserPreferences
+from api.models import db, User, Menu, Dish, Ingredient, DishIngredient, Restriction, Preference, MenuAvailability, UserRestrictions, UserPreferences, Favorite
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -383,3 +383,48 @@ def edit_user_preferences():
     except Exception as e:
         db.session.rollback()
         return jsonify({"msg": "error updating ", "error": str(e)}), 400
+
+@api.route('/favorites', methods=['GET'])
+@jwt_required()
+def get_favorites():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    return jsonify([favorite.serialize() for favorite in user.favorites]), 200
+
+@api.route('/favorites', methods=['POST'])
+@jwt_required()
+def add_favorite():
+    current_user_id = get_jwt_identity()
+    dish_id = request.json.get('dish_id')
+    
+    # Check if already favorited
+    existing_favorite = Favorite.query.filter_by(
+        user_id=current_user_id,
+        dish_id=dish_id
+    ).first()
+    
+    if existing_favorite:
+        return jsonify({"message": "Already favorited"}), 400
+        
+    favorite = Favorite(user_id=current_user_id, dish_id=dish_id)
+    db.session.add(favorite)
+    db.session.commit()
+    
+    return jsonify(favorite.serialize()), 201
+
+@api.route('/favorites/<int:dish_id>', methods=['DELETE'])
+@jwt_required()
+def remove_favorite(dish_id):
+    current_user_id = get_jwt_identity()
+    favorite = Favorite.query.filter_by(
+        user_id=current_user_id,
+        dish_id=dish_id
+    ).first()
+    
+    if not favorite:
+        return jsonify({"message": "Favorite not found"}), 404
+        
+    db.session.delete(favorite)
+    db.session.commit()
+    
+    return jsonify({"message": "Favorite removed"}), 200
