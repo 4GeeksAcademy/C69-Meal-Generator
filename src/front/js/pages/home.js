@@ -10,6 +10,28 @@ export const Home = () => {
 	const [error, setError] = useState(null);
 	const [menus, setMenus] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [joke, setJoke] = useState(null);
+
+
+	const fetchJoke = async () => {
+		try {
+			const joke = await fetch("https://official-joke-api.appspot.com/jokes/random", {
+				mode: "cors",
+				header: {
+					"Accept": "application/json"
+				}
+			})
+			const jokeData = await joke.json()
+			setJoke(jokeData);
+		} catch (err) {
+			setError("error fetching joke");
+			console.log(err);
+			return [];
+		}
+	}
+	useEffect(() => {
+		fetchJoke()
+	}, [])
 
 	const fetchMenus = async () => {
 		try {
@@ -27,23 +49,23 @@ export const Home = () => {
 
 	const filterDishesByUserPreferences = (dishes) => {
 		if (!store.userPreferences || !Array.isArray(dishes)) {
-			console.log("No preferences or dishes:", { 
-				userPreferences: store.userPreferences, 
-				dishes: dishes 
-			});
+			// console.log("No preferences or dishes:", { 
+			// 	userPreferences: store.userPreferences, 
+			// 	dishes: dishes 
+			// });
 			return dishes;
 		}
 	
-		console.log("User Preferences:", store.userPreferences);
+		// console.log("User Preferences:", store.userPreferences);
 		
 		return dishes.filter(dish => {
-			console.log("Checking dish preferences:", {
-				name: dish.name,
-				preferences: dish.preference
-			});
+			// console.log("Checking dish preferences:", {
+			// 	name: dish.name,
+			// 	preferences: dish.preference
+			// });
 	
 			if (!dish.preference) {
-				console.log("No preferences for dish:", dish.name);
+				// console.log("No preferences for dish:", dish.name);
 				return true;
 			}
 	
@@ -56,40 +78,40 @@ export const Home = () => {
 			console.log("Converted user preferences:", userPreferences);
 	
 			for (const [preference, isPreferred] of Object.entries(userPreferences)) {
-				console.log(`Checking ${preference}:`, {
-					userHasPreference: isPreferred,
-					dishHasPreference: dish.preference[preference]
-				});
+				// console.log(`Checking ${preference}:`, {
+				// 	userHasPreference: isPreferred,
+				// 	dishHasPreference: dish.preference[preference]
+				// });
 				
 				if (isPreferred && dish.preference[preference]) {
-					console.log(`Filtering out ${dish.name} due to ${preference}`);
+					// console.log(`Filtering out ${dish.name} due to ${preference}`);
 					return false;
 				}
 			}
-			console.log(`Keeping dish: ${dish.name}`);
+			// console.log(`Keeping dish: ${dish.name}`);
 			return true;
 		});
 	};
 
 	const filterDishesByUserRestrictions = (dishes) => {
 		if (!store.userRestrictions || !Array.isArray(dishes)) {
-			console.log("No restrictions or dishes:", { 
-				userRestrictions: store.userRestrictions, 
-				dishes: dishes 
-			});
+			// console.log("No restrictions or dishes:", { 
+			// 	userRestrictions: store.userRestrictions, 
+			// 	dishes: dishes 
+			// });
 			return dishes;
 		}
 	
-		console.log("User Restrictions:", store.userRestrictions);
+		// console.log("User Restrictions:", store.userRestrictions);
 		
 		return dishes.filter(dish => {
-			console.log("Checking dish:", {
-				name: dish.name,
-				restrictions: dish.restriction
-			});
+			// console.log("Checking dish:", {
+			// 	name: dish.name,
+			// 	restrictions: dish.restriction
+			// });
 	
 			if (!dish.restriction) {
-				console.log("No restrictions for dish:", dish.name);
+				// console.log("No restrictions for dish:", dish.name);
 				return true;
 			}
 	
@@ -107,7 +129,7 @@ export const Home = () => {
 					return false;
 				}
 			}
-			console.log(`Keeping dish: ${dish.name}`);
+			// console.log(`Keeping dish: ${dish.name}`);
 			return true;
 		});
 	};
@@ -194,6 +216,15 @@ export const Home = () => {
 
 	return (
 		<div className="overallWebsite text-center">
+			<div className="joke"> 
+				{joke && (
+					<div>
+						<p>There's a Japanese saying "笑う門には福来たる" (warau kado niwa fuku kitaru) which means "good fortune/happiness comes to those who smile/laugh." On that note...</p>
+						<p>{joke.setup}</p>
+						<p><em>{joke.punchline}</em></p>
+					</div>
+				)}
+			</div>
 			<p className="toggle-menu-buttons d-inline-flex gap">
 				<button
 					type="button"

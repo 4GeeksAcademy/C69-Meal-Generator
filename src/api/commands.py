@@ -76,7 +76,7 @@ def setup_commands(app):
             },
             {
                 "id": "17",
-                "name": "Grilled black cod	",
+                "name": "Grilled black cod",
             },
             {
                 "id": "18",
@@ -185,11 +185,7 @@ def setup_commands(app):
             db.session.commit()
 
 
-    @app.cli.command("populate-dishes")  
-    def populate_dishes_command():
-        """Command wrapper for generate_dishes_list""" 
-        generate_dishes_list()
-
+    @app.cli.command("populate-dishes")   
     def generate_dishes_list(): 
         dish_list = [
             {
@@ -198,43 +194,92 @@ def setup_commands(app):
                 "ingredients": ["Grilled miso marinated salmon", "Maitake mushrooms", "Shiitake mushrooms", "Shimeji mushrooms"],
                 "created_at": "2024-10-11 23:52:53",
                 "menu_id": "1",
-                "restrictions": {"seafood": True, "soybeans": True},
-                "preferences": {"no_raw_fish": True, "vegan": True, "vegetarian": True, "carnivore": True, "low_sodium": True, "soy_free": True}
+                "restrictions": {'seafood':True, 'soybeans':True},
+                "preferences": {'vegan':True, 'vegetarian':True, 'gluten_intolerance':True, 'soy_free':True},
             },
-            {
+             {
                 "id": "13",
                 "name": "Gindara Yuan Yaki",
                 "ingredients": ["Grilled black cod", "Yuzu soy sauce"],
                 "created_at": "2024-10-11 23:52:53",
                 "menu_id": "2",
-                "restrictions": {"seafood": True, "soybeans": True},
-                "preferences": {"no_raw_fish": True, "vegan": True, "vegetarian": True, "carnivore": True, "low_sodium": True, "soy_free": True}
+                "restrictions": {'seafood':True, 'soybeans':True, 'sesame':True},
+                "preferences": {'vegan':True, 'vegetarian':True, 'gluten_intolerance':True, 'soy_free': True},
             },
             {
                 "id": "14",
-                "name": "Dish Testing 1",
-                "ingredients": ["Grilled black cod", "Yuzu soy sauce"],
+                "name": "Sukiyaki Nabe",
+                "ingredients": ["Sweet soy sauce soup", "Washu beef", "Tofu", "Nappa cabbage", "Shiitake mushrooms", "Burdock", "Carrot", "Scallion"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "1",
+                "restrictions": {'soybeans':True, 'beef':True, 'alcohol':True},
+                "preferences": {'vegan':True, 'vegetarian':True, 'gluten_intolerance':True, 'soy_free':True},
+            },
+            {
+                "id": "15",
+                "name": "Wagyu Ishiyaki",
+                "ingredients": ["Sliced wagyu beef", "Vegetables", "Wasabi", "Yuzu kosho", "Miso", "Soy Sauce"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "1",
+                "restrictions": {'beef':True, 'soybeans':True},
+                "preferences": {'vegan':True, 'vegetarian':True, 'gluten_intolerance':True, 'soy_free':True},
+            },
+            {
+                "id": "16",
+                "name": "Kama Yaki",
+                "ingredients": ["Grilled fish collar of the day", "Rice"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "1",
+                "restrictions": {'seafood':True},
+                "preferences": {'vegan':True, 'vegetarian':True, 'keto_low_carb':True},
+            },
+            {
+                "id": "17",
+                "name": "Unajyu", 
+                "ingredients": ["Grilled eel served with sweet soy sauce", "Rice"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "2",
+                "restrictions": {'soybeans':True, 'seafood':True},
+                "preferences": {'vegan':True, 'vegetarian':True, 'gluten_intolerance':True, 'soy_free':True, 'keto_low_carb':True, 'kosher':True},
+            },
+            {
+                "id": "18",
+                "name": "Kamo Soba", 
+                "ingredients": ["Buckwheat noodle soup with grilled duck breast", "Scallion", "Yuzu Zest"],
                 "created_at": "2024-10-11 23:52:53",
                 "menu_id": "2",
                 "restrictions": {},
-                "preferences": {}
+                "preferences": {'vegan':True, 'vegetarian':True},
             },
-            
+            {
+                "id": "19",
+                "name": "Ten Don",
+                "ingredients": ["Assorted Vegetables", "Shrimp Tempura", "Rice", "Soy Sauce"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "2",
+                "restrictions": {'seafood':True, 'shellfish':True, 'wheat':True, 'soybeans':True},
+                "preferences": {'vegan':True, 'vegetarian':True, 'gluten_intolerance':True, 'soy_free':True, 'keto_low_carb':True, 'kosher':True},
+            },
+            {
+                "id": "20", 
+                "name": "Jidori Garlic Shoyu Donburi",
+                "ingredients": ["Grilled free-range organic chicken thigh", "Soy Sauce", "Rice"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "2",
+                "restrictions": {'soybeans':True},
+                "preferences": {'vegan':True, 'vegetarian':True, 'gluten_intolerance':True, 'soy_free':True, 'keto_low_carb':True},
+            },
+            {
+                "id": "21",
+                "name": "Wagyu Donburi",
+                "ingredients": ["Sliced wagyu beef", "Duck Sauce", "Rice"],
+                "created_at": "2024-10-11 23:52:53",
+                "menu_id": "2",
+                "restrictions": {'beef':True, 'soybeans':True},
+                "preferences": {'vegan':True, 'vegetarian':True, 'keto_low_carb':True, 'gluten_intolerance':True, 'soy_free':True},
+            },
         ]
 
-        # for dish in dish_list:
-        #     new_dish=Dish(
-        #         id=dish['id'],
-        #         name=dish['name'],
-        #         ingredients=dish['ingredients'],
-        #         created_at=dish['created_at'],
-        #         menu_id=dish['menu_id'],
-        #     )
-
-        #     for ingredient_name in dish['ingredients']:
-        #         ingredient = Ingredient.query.filter_by(name=ingredient_name).first()
-        #         if ingredient:
-        #             new_dish.ingredients.append(ingredient)
 
         for dish in dish_list:
             new_dish = Dish(
@@ -266,33 +311,3 @@ def setup_commands(app):
             dish_preference = Preference(**{**dish['preferences'], "dish_id":new_dish.id})
             db.session.add(dish_preference)
             db.session.commit()
-
-    @app.cli.command("reset-dishes")
-    def reset_dishes():
-        """Delete all dishes and their restrictions, then repopulate them"""
-        try:
-            # First delete all restrictions (due to foreign key constraints)
-            print("Deleting existing restrictions...")
-            Restriction.query.delete()
-            
-            # Then delete all dish_ingredient associations
-            print("Deleting dish-ingredient associations...")
-            DishIngredient.query.delete()
-            
-            # Then delete all dishes
-            print("Deleting existing dishes...")
-            Dish.query.delete()
-            
-            db.session.commit()
-            print("All dishes and related data deleted successfully")
-
-            # Call the populate-dishes command
-            print("Repopulating dishes...")
-            generate_dishes_list()
-            
-            print("Dishes reset and repopulated successfully!")
-
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
-            db.session.rollback()
-            raise e

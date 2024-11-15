@@ -3,24 +3,10 @@ import { Context } from "../store/appContext";
 import "../../styles/profile.css"
 import ToggleSwitch from '../component/ToggleSwitch';
 
-// const foodRestrictons = [
-//     "dairy", "eggs", "seafood", "shellfish", "wheat", "soybeans",
-//     "sesame", "tree nuts", "peanuts",
-// ]
-// const foodReligionRestrictions =[
-//     "pork", "beef", "alcohol"
-// ]
-// const foodPreferences = [
-//     "No Raw Fish", "Vegetarian", "Vegan", "Gluten Intolerance","Mercury Sensitvity / Pregnancy",
-//     "Carnivore", "Keto / Low Carb", "Lactose Intolerance", "Egg Free", "Soy Free", "No Seaweed",
-//     "Low Sodium"
-// ]
-
 
 export const Profile = () => {
     const {store, actions} = useContext(Context);
     const [activeTab, setActiveTab] = useState("preferences")
-    // const [restrictions, setRestrictions] = useState({});
     const [localRestrictions, setLocalRestrictions] = useState({});
     const [localPreferences, setLocalPreferences] = useState({});
     const [saveStatus, setSaveStatus] = useState("");
@@ -29,7 +15,7 @@ export const Profile = () => {
 const preferenceOptions = [
     "No Raw Fish", "Vegetarian", "Vegan", "Gluten Intolerance","Mercury Sensitivity Pregnancy",
     "Carnivore", "Keto Low Carb", "Lactose Intolerance", "Egg Free", "Soy Free", "No Seaweed",
-    "Low Sodium"
+    "Low Sodium", "Kosher"
 ]
     
     useEffect(() => {
@@ -47,12 +33,6 @@ const preferenceOptions = [
         }
     }, [store.userPreferences])
     
-    // const handleToggle = (restriction) => {
-    //     setRestrictions(prev => ({
-    //         ...prev,
-    //         [restriction]: !prev[restriction]
-    //     }));
-    // };
     const handleToggle = (restriction) => {
         setLocalRestrictions(prev => ({
             ...prev,
@@ -67,11 +47,6 @@ const preferenceOptions = [
         }));
     };
 
-    // const handleSave = async () => {
-    //     console.log("saving preferences:", restrictions);
-        
-    //     alert("preferences saved successfully!");
-    // }
     const handleSave = async () => {
         setSaveStatus("saving...");
 
@@ -254,6 +229,3 @@ const preferenceOptions = [
     )
 
 }
-
-
-//  saved version of user profile 2 keep going!!

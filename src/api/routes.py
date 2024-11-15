@@ -8,6 +8,7 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, decode_token, JWTManager
+from api.email_util import send_reset_email
 
 api = Blueprint('api', __name__)
 
@@ -242,7 +243,7 @@ def handle_forgot_password():
     if user:
         expiration_delta = datetime.timedelta(minutes=30)
         reset_token = create_access_token(identity=user.id, expires_delta=expiration_delta)
-        # send_reset_email(user.email, reset_token)
+        send_reset_email(user.email, reset_token)
 
     return jsonify({'msg': 'Please check your email to reset your password'}), 200
 
@@ -346,6 +347,7 @@ def get_user_preferences():
             lactose_intolerance = False,
             soy_free = False,
             low_sodium = False,
+            kosher = False
 
         )
 

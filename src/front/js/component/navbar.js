@@ -1,14 +1,16 @@
-import React from "react";
+import React, {useContext} from "react";
+import { Context } from "../store/appContext";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/navbar.css"
 import towaLogo from "../../img/towa-logo.png"
 
 export const Navbar = () => {
+	const {store, actions} = useContext(Context);
 	const isLoggedIn = !!localStorage.getItem("token");
 	const navigate= useNavigate();
 
 	const handleLogout= () => {
-		localStorage.removeItem("token");
+		actions.logout();
 		navigate("/");
 		window.location.reload()
 	}
