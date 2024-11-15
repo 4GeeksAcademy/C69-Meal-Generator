@@ -347,6 +347,7 @@ def get_user_preferences():
             lactose_intolerance = False,
             soy_free = False,
             low_sodium = False,
+            kosher = False
 
         )
 
