@@ -57,6 +57,32 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			ForgotPassword: async (email) => {
+				try {
+
+					const BACKEND_URL = process.env.BACKEND_URL;
+
+					const response = await fetch(process.env.BACKEND_URL + '/forgot-password', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ email }),
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						alert(`Error: ${errorData.msg}`);
+						return;
+					}
+
+					const data = await response.json();
+					alert('An email has been sent with password reset instructions.');
+				} catch (error) {
+					console.error('Error during forgot password request', error);
+				}
+			},
+
 			userProfile: async () => {
 				try {
 					const token = localStorage.getItem('jwt-token');
@@ -90,9 +116,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 				if (!store.token) return;
 				try {
 					const resp = await fetch(`${process.env.BACKEND_URL}/get-user-restrictions`, {
-						headers: { "Authorization": `Bearer ${store.token}`}
+						headers: { "Authorization": `Bearer ${store.token}` }
 					});
-					if(resp.ok) {
+					if (resp.ok) {
 						const data = await resp.json();
 
 						const formattedRestrictions = {};
@@ -106,7 +132,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						});
 
 						localStorage.setItem("userRestrictions", JSON.stringify(formattedRestrictions));
-						setStore({ userRestrictions: formattedRestrictions});
+						setStore({ userRestrictions: formattedRestrictions });
 						return formattedRestrictions;
 					}
 				} catch (error) {
@@ -135,13 +161,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if (resp.ok) {
 						localStorage.setItem("userRestrictions", JSON.stringify(restrictions));
-						setStore({ userRestrictions: restrictions});
-						return {success: true};
+						setStore({ userRestrictions: restrictions });
+						return { success: true };
 					}
-					return { success: false, error: "failed to update restrictions"};
+					return { success: false, error: "failed to update restrictions" };
 				} catch (error) {
 					console.error("error updating user restrictions:", error);
-					return {success: false, error: "error updating restrictions"}
+					return { success: false, error: "error updating restrictions" }
 				}
 			},
 
@@ -150,9 +176,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 				if (!store.token) return;
 				try {
 					const resp = await fetch(`${process.env.BACKEND_URL}/get-user-preferences`, {
-						headers: { "Authorization": `Bearer ${store.token}`}
+						headers: { "Authorization": `Bearer ${store.token}` }
 					});
-					if(resp.ok) {
+					if (resp.ok) {
 						const data = await resp.json();
 
 						const formattedPreferences = {};
@@ -166,7 +192,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						});
 
 						localStorage.setItem("userPreferences", JSON.stringify(formattedPreferences));
-						setStore({ userPreferences: formattedPreferences});
+						setStore({ userPreferences: formattedPreferences });
 						return formattedPreferences;
 					}
 				} catch (error) {
@@ -195,22 +221,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if (resp.ok) {
 						localStorage.setItem("userPreferences", JSON.stringify(preferences));
-						setStore({ userPreferences: preferences});
-						return {success: true};
+						setStore({ userPreferences: preferences });
+						return { success: true };
 					}
-					return { success: false, error: "failed to update preferences"};
+					return { success: false, error: "failed to update preferences" };
 				} catch (error) {
 					console.error("error updating user preferences:", error);
-					return {success: false, error: "error updating preferences"}
+					return { success: false, error: "error updating preferences" }
 				}
 			},
 
-			
+
 			logout: () => {
 				localStorage.removeItem("token");
 				localStorage.removeItem("currentUser");
 				localStorage.removeItem("userRestrictions");
-				setStore({ token: null, user: null, userRestrictions: null});
+				setStore({ token: null, user: null, userRestrictions: null });
 			},
 		},
 	};
