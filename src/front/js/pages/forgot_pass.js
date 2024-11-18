@@ -22,9 +22,7 @@ export const ForgotPassword = () => {
         if (response) {
             navigate('/');
             alert("Please check your email for your reset password link.")
-        } else {
-            alert("We were not able to send you a reset email at this time. Please try again later.")
-        }
+        } 
 
     }
     return (

@@ -10,6 +10,7 @@ import datetime
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, decode_token, JWTManager
 from api.email_utils import send_reset_email
 
+
 app = Flask(__name__)
 
 api = Blueprint('api', __name__)
@@ -235,6 +236,21 @@ def private_route():
     
     return jsonify(logged_in_as = current_user), 200
     
+# @api.route('/forgot-password', methods=['POST'])
+# def handle_forgot_password():
+#     email = request.json.get('email', None)
+#     if not email:
+#         return jsonify({'msg': 'Email is required'}), 400
+
+#     user = User.query.filter_by(email=email).first()
+
+#     if user:
+#         expiration_delta = datetime.timedelta(minutes=30)
+#         reset_token = create_access_token(identity=user.id, expires_delta=expiration_delta)
+#         send_reset_email(user.email, reset_token)
+
+#     return jsonify({'msg': 'Please check your email to reset your password'}), 200
+
 @api.route('/forgot-password', methods=['POST'])
 def handle_forgot_password():
     email = request.json.get('email', None)
@@ -242,14 +258,20 @@ def handle_forgot_password():
         return jsonify({'msg': 'Email is required'}), 400
 
     user = User.query.filter_by(email=email).first()
+    if not user:
+        # Still return success to prevent email enumeration
+        return jsonify({'msg': 'If an account exists with this email, you will receive reset instructions'}), 200
 
-    if user:
+    try:
         expiration_delta = datetime.timedelta(minutes=30)
         reset_token = create_access_token(identity=user.id, expires_delta=expiration_delta)
-        send_reset_email(user.email, reset_token)
-
-    return jsonify({'msg': 'Please check your email to reset your password'}), 200
-
+        if send_reset_email(user.email, reset_token):
+            return jsonify({'msg': 'Password reset instructions have been sent to your email'}), 200
+        else:
+            return jsonify({'msg': 'Error sending email. Please try again later.'}), 500
+    except Exception as e:
+        print(f"Error in forgot password route: {str(e)}")
+        return jsonify({'msg': 'An error occurred. Please try again later.'}), 500
 
 @api.route('/reset-password', methods= ['POST'])
 def handle_reset_password():

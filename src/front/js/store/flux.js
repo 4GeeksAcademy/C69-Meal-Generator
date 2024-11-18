@@ -60,8 +60,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 			ForgotPassword: async (email) => {
 				try {
 
-					const BACKEND_URL = process.env.BACKEND_URL;
-
 					const response = await fetch(process.env.BACKEND_URL + '/forgot-password', {
 						method: 'POST',
 						headers: {
