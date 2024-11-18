@@ -214,6 +214,13 @@ export const Home = () => {
 		fetchAvailableMenu(menus, menuType);
 	};
 
+	useEffect(() => {
+		if (store.token) {
+			actions.getFavorites();
+		}
+	}, [store.token])
+
+
 	return (
 		<div className="overallWebsite text-center">
 			<div className="joke"> 

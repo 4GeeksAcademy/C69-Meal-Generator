@@ -219,14 +219,14 @@ def handle_log_in():
         return jsonify({'msg': 'Invalid username or password'}), 401
     
     expiration_delta = datetime.timedelta(days=7)
-    access_token = create_access_token(identity = user.email, expires_delta = expiration_delta)
+    access_token = create_access_token(identity = user.id, expires_delta = expiration_delta)
     return jsonify({'token': access_token, "user": user.serialize()}), 200
 
 @api.route('/private', methods = ['GET'])
 @jwt_required()
 def private_route():
     current_user = get_jwt_identity()
-    user = User.query.filter_by(email = current_user).first()
+    user = User.query.get(current_user).first()
     if not user:
         return jsonify({'msg': 'User not found'}), 404
     
@@ -274,7 +274,11 @@ def handle_reset_password():
 @api.route('/get-user-restrictions', methods= ['GET'])
 @jwt_required()
 def get_user_restrictions():
-    user= User.query.filter_by(email=get_jwt_identity()).first()
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
     restrictions= UserRestrictions.query.filter_by(user_id = user.id).first()
 
     if not restrictions:
@@ -305,7 +309,10 @@ def get_user_restrictions():
 @jwt_required()
 def edit_user_restrictions():
     request_body = request.get_json()
-    user= User.query.filter_by(email=get_jwt_identity()).first()
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
     restrictions= UserRestrictions.query.filter_by(user_id = user.id).first()
 
     if not restrictions:
@@ -329,7 +336,10 @@ def edit_user_restrictions():
 @api.route('/get-user-preferences', methods=['GET'])
 @jwt_required()
 def get_user_preferences():
-    user = User.query.filter_by(email=get_jwt_identity()).first()
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
     preferences = UserPreferences.query.filter_by(user_id = user.id).first()
 
     if not preferences:
@@ -361,7 +371,10 @@ def get_user_preferences():
 @jwt_required()
 def edit_user_preferences():
     request_body = request.get_json()
-    user= User.query.filter_by(email=get_jwt_identity()).first()
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
     preferences= UserPreferences.query.filter_by(user_id = user.id).first()
 
     if not preferences:
@@ -398,6 +411,10 @@ def add_favorite():
     current_user_id = get_jwt_identity()
     dish_id = request.json.get('dish_id')
     
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
     # Check if already favorited
     existing_favorite = Favorite.query.filter_by(
         user_id=current_user_id,
@@ -417,6 +434,10 @@ def add_favorite():
 @jwt_required()
 def remove_favorite(dish_id):
     current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+        
     favorite = Favorite.query.filter_by(
         user_id=current_user_id,
         dish_id=dish_id
