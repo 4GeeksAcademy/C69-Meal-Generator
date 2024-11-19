@@ -1,8 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { Context } from "../store/appContext";
 
 export const Menu = (props) => {
-
+    const {store, actions} = useContext(Context)
     const { menuType, dishes } = props;
+
+    const handleFavorites = async(dishId) => {
+        if (!store.token) {
+            alert("please log in to save favorites");
+            return 
+        }
+        await actions.toggleFavorite(dishId);
+    }
+
+    const isFavorite = (dishId) => {
+        return store.favorites.some(fav => fav.dish_id === dishId)
+    }
 
     return (
         <div>
@@ -15,6 +28,12 @@ export const Menu = (props) => {
                     <ul>
                         {dishes.map(dish => (
                             <li key={dish.id}>
+                                <button 
+                                    className="btn btn-light"
+                                    onClick={() => handleFavorites(dish.id)}
+                                >
+                                    <i className={`fa-${isFavorite(dish.id) ? 'solid' : 'regular'} fa-star`} />
+                                </button>
                                 <h2>{dish.name}</h2>
                                 <div>
                                     {dish.ingredients.map(ingredient => ingredient.name).join(', ')}

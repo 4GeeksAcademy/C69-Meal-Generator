@@ -5,19 +5,19 @@ import ToggleSwitch from '../component/ToggleSwitch';
 
 
 export const Profile = () => {
-    const {store, actions} = useContext(Context);
+    const { store, actions } = useContext(Context);
     const [activeTab, setActiveTab] = useState("preferences")
     const [localRestrictions, setLocalRestrictions] = useState({});
     const [localPreferences, setLocalPreferences] = useState({});
     const [saveStatus, setSaveStatus] = useState("");
     const [savePreferencesStatus, setPreferencesStatus] = useState("");
 
-const preferenceOptions = [
-    "No Raw Fish", "Vegetarian", "Vegan", "Gluten Intolerance","Mercury Sensitivity Pregnancy",
-    "Carnivore", "Keto Low Carb", "Lactose Intolerance", "Egg Free", "Soy Free", "No Seaweed",
-    "Low Sodium", "Kosher"
-]
-    
+    const preferenceOptions = [
+        "No Raw Fish", "Vegetarian", "Vegan", "Gluten Intolerance", "Mercury Sensitivity Pregnancy",
+        "Carnivore", "Keto Low Carb", "Lactose Intolerance", "Egg Free", "Soy Free", "No Seaweed",
+        "Low Sodium", "Kosher"
+    ]
+
     useEffect(() => {
         if (store.userRestrictions) {
             setLocalRestrictions(store.userRestrictions);
@@ -32,7 +32,7 @@ const preferenceOptions = [
             actions.getUserPreferences();
         }
     }, [store.userPreferences])
-    
+
     const handleToggle = (restriction) => {
         setLocalRestrictions(prev => ({
             ...prev,
@@ -59,7 +59,7 @@ const preferenceOptions = [
         }
 
         setTimeout(() => setSaveStatus(""), 3000);
-      
+
     };
     const handleSavePreferences = async () => {
         setPreferencesStatus("saving...");
@@ -73,22 +73,22 @@ const preferenceOptions = [
         }
 
         setTimeout(() => setPreferencesStatus(""), 3000);
-      
+
     };
 
     const getReligiousRestrictions = () => {
-        return Object.entries(localRestrictions).filter(([key]) => 
+        return Object.entries(localRestrictions).filter(([key]) =>
             ["Pork", "Beef", "Alcohol"].includes(key)
         );
     };
-    
+
     const getAllergyRestrictions = () => {
-        return Object.entries(localRestrictions).filter(([key]) => 
+        return Object.entries(localRestrictions).filter(([key]) =>
             !["Pork", "Beef", "Alcohol"].includes(key)
         );
     };
 
-    
+
 
 
     return (
@@ -124,43 +124,43 @@ const preferenceOptions = [
                         </a>
                     </li>
                 </ul>
-                
+
                 {/* Tab content for each pill */}
                 <div className="tab-content mt-4">
                     {activeTab === 'preferences' && (
                         <div className="tab-pane active d-flex justify-content-center align-items-center flex-column">
-                        <h5 className="mb-4 text-center">Preferences</h5>
-                        <div className="row w-50">
-                            {preferenceOptions.map((preference) => {
-                                // Define snakeKey inside the map function
-                                const snakeKey = preference.toLowerCase().replace(/ /g, '_');
-                                return (
-                                    <div key={preference} className="col-md-6 mb-3 d-flex justify-content-center">
-                                        <div className="d-flex align-item-center justify-content-between border rounded p-2 w-100">
-                                            <span className="text-capitalize">
-                                                {preference}
-                                            </span>
-                                            <input 
-                                                type="checkbox" 
-                                                className="form-check-input"   
-                                                checked={localPreferences[snakeKey] || false}
-                                                onChange={() => handlePreferencesToggle(preference)} 
-                                            />
+                            <h5 className="mb-4 text-center">Preferences</h5>
+                            <div className="row w-50">
+                                {preferenceOptions.map((preference) => {
+                                    // Define snakeKey inside the map function
+                                    const snakeKey = preference.toLowerCase().replace(/ /g, '_');
+                                    return (
+                                        <div key={preference} className="col-md-6 mb-3 d-flex justify-content-center">
+                                            <div className="d-flex align-item-center justify-content-between border rounded p-2 w-100">
+                                                <span className="text-capitalize">
+                                                    {preference}
+                                                </span>
+                                                <input
+                                                    type="checkbox"
+                                                    className="form-check-input"
+                                                    checked={localPreferences[snakeKey] || false}
+                                                    onChange={() => handlePreferencesToggle(preference)}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                        <button onClick={handleSavePreferences} className="btn btn-primary mt-3 mb-2">
-                            <i className="fa-solid fa-cloud me-2"></i>
-                            Save Preferences
-                        </button>
-                        {savePreferencesStatus && (
-                            <div className={`alert ${savePreferencesStatus.includes("Error") ? "alert-danger" : "alert-success"} mt-2`}>
-                                {savePreferencesStatus}
+                                    );
+                                })}
                             </div>
-                        )}
-                    </div>
+                            <button onClick={handleSavePreferences} className="btn btn-primary mt-3 mb-2">
+                                <i className="fa-solid fa-cloud me-2"></i>
+                                Save Preferences
+                            </button>
+                            {savePreferencesStatus && (
+                                <div className={`alert ${savePreferencesStatus.includes("Error") ? "alert-danger" : "alert-success"} mt-2`}>
+                                    {savePreferencesStatus}
+                                </div>
+                            )}
+                        </div>
                     )}
 
                     {activeTab === 'restrictions' && (
@@ -207,7 +207,7 @@ const preferenceOptions = [
                                 Save Restrictions
                             </button>
                             {saveStatus && (
-                                <div className= {`alert ${saveStatus.includes("Error") ? "alert-danger" : "alert-success"} mt-2`}>
+                                <div className={`alert ${saveStatus.includes("Error") ? "alert-danger" : "alert-success"} mt-2`}>
                                     {saveStatus}
                                 </div>
                             )}
@@ -216,10 +216,43 @@ const preferenceOptions = [
 
                     {activeTab === 'favorites' && (
                         <div className="tab-pane active">
-                            <h5>Favorites</h5>
-                            <p>Manage your favorite items, categories, and more.</p>
+                            <h5 className="mb-4 text-center">Your Favorite Dishes</h5>
+                            <div className="row fav-div">
+                                {store.favorites.map((favorite, index) => (
+                                    <div key={favorite.id} className="col-md-4 mb-4">
+                                        <div className="card h-100">
+                                            <div className="card-body">
+                                                <div className="d-flex justify-content-between align-items-start">
+                                                    <h5 className="card-title">{favorite.dish.name}</h5>
+                                                    <button
+                                                        className="btn btn-link text-danger p-0"
+                                                        onClick={() => actions.toggleFavorite(favorite.dish.id)}
+                                                    >
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                                <h6 className="card-subtitle mb-2 text-muted">
+                                                    Menu: {favorite.dish.menu_id === 1 ? "Brunch" : "Dinner"}
+                                                </h6>
+                                                <p className="card-text">
+                                                    <small>
+                                                        <strong>Ingredients: </strong>
+                                                        {favorite.dish.ingredients.map(ing => ing.name).join(", ")}
+                                                    </small>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {store.favorites.length === 0 && (
+                                    <div className="col-12 text-center">
+                                        <p className="text-muted">You haven't favorited any dishes yet.</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
+
                 </div>
 
 

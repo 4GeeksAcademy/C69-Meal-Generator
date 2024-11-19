@@ -1,7 +1,7 @@
   
 import os
 from flask_admin import Admin
-from .models import db, User, Menu, Dish, MenuAvailability, Ingredient, DishIngredient, Restriction, Preference, UserRestrictions, UserPreferences
+from .models import db, User, Menu, Dish, MenuAvailability, Ingredient, DishIngredient, Restriction, Preference, UserRestrictions, UserPreferences, Favorite
 from flask_admin.contrib.sqla import ModelView
 
 class ChildView(ModelView):
@@ -63,6 +63,28 @@ class UserPreferencesView(ModelView):
      # Add sorting capabilities
     column_sortable_list = ['id', 'user_id', ('user_email', 'user.email')]
 
+class FavoriteView(ModelView):
+    column_display_pk = True
+    column_hide_backrefs = False
+    column_list = ('id', 'user_email', 'dish_name', 'created_at')
+    
+    # Add formatters for user email and dish name
+    def _user_email_formatter(view, context, model, name):
+        return model.user.email if model.user else None
+        
+    def _dish_name_formatter(view, context, model, name):
+        return model.dish.name if model.dish else None
+        
+    column_formatters = {
+        "user_email": _user_email_formatter,
+        "dish_name": _dish_name_formatter
+    }
+    
+    # Add sorting capabilities
+    column_sortable_list = ['id', 'created_at', ('user_email', 'user.email'), ('dish_name', 'dish.name')]
+
+
+
 def setup_admin(app):
     app.secret_key = os.environ.get('FLASK_APP_KEY', 'sample key')
     app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
@@ -76,6 +98,7 @@ def setup_admin(app):
     admin.add_view(ChildView(Ingredient, db.session))
     admin.add_view(ChildView(MenuAvailability, db.session))
     admin.add_view(DishIngredientView(DishIngredient, db.session))
+    admin.add_view(FavoriteView(Favorite, db.session))
 
     # You can duplicate that line to add mew models
     # admin.add_view(ModelView(YourModelName, db.session))
