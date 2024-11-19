@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Menu, Dish, Ingredient, DishIngredient, Restriction, Preference, MenuAvailability, UserRestrictions, UserPreferences
+from api.models import db, User, Menu, Dish, Ingredient, DishIngredient, Restriction, Preference, MenuAvailability, UserRestrictions, UserPreferences, Favorite
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -223,14 +223,14 @@ def handle_log_in():
         return jsonify({'msg': 'Invalid username or password'}), 401
     
     expiration_delta = datetime.timedelta(days=7)
-    access_token = create_access_token(identity = user.email, expires_delta = expiration_delta)
+    access_token = create_access_token(identity = user.id, expires_delta = expiration_delta)
     return jsonify({'token': access_token, "user": user.serialize()}), 200
 
 @api.route('/private', methods = ['GET'])
 @jwt_required()
 def private_route():
     current_user = get_jwt_identity()
-    user = User.query.filter_by(email = current_user).first()
+    user = User.query.get(current_user).first()
     if not user:
         return jsonify({'msg': 'User not found'}), 404
     
@@ -306,7 +306,11 @@ def handle_reset_password():
 @api.route('/get-user-restrictions', methods= ['GET'])
 @jwt_required()
 def get_user_restrictions():
-    user= User.query.filter_by(email=get_jwt_identity()).first()
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
     restrictions= UserRestrictions.query.filter_by(user_id = user.id).first()
 
     if not restrictions:
@@ -337,7 +341,10 @@ def get_user_restrictions():
 @jwt_required()
 def edit_user_restrictions():
     request_body = request.get_json()
-    user= User.query.filter_by(email=get_jwt_identity()).first()
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
     restrictions= UserRestrictions.query.filter_by(user_id = user.id).first()
 
     if not restrictions:
@@ -361,7 +368,10 @@ def edit_user_restrictions():
 @api.route('/get-user-preferences', methods=['GET'])
 @jwt_required()
 def get_user_preferences():
-    user = User.query.filter_by(email=get_jwt_identity()).first()
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
     preferences = UserPreferences.query.filter_by(user_id = user.id).first()
 
     if not preferences:
@@ -379,6 +389,7 @@ def get_user_preferences():
             lactose_intolerance = False,
             soy_free = False,
             low_sodium = False,
+            kosher = False
 
         )
 
@@ -392,7 +403,10 @@ def get_user_preferences():
 @jwt_required()
 def edit_user_preferences():
     request_body = request.get_json()
-    user= User.query.filter_by(email=get_jwt_identity()).first()
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
     preferences= UserPreferences.query.filter_by(user_id = user.id).first()
 
     if not preferences:
@@ -415,3 +429,56 @@ def edit_user_preferences():
     except Exception as e:
         db.session.rollback()
         return jsonify({"msg": "error updating ", "error": str(e)}), 400
+
+@api.route('/favorites', methods=['GET'])
+@jwt_required()
+def get_favorites():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    return jsonify([favorite.serialize() for favorite in user.favorites]), 200
+
+@api.route('/favorites', methods=['POST'])
+@jwt_required()
+def add_favorite():
+    current_user_id = get_jwt_identity()
+    dish_id = request.json.get('dish_id')
+    
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Check if already favorited
+    existing_favorite = Favorite.query.filter_by(
+        user_id=current_user_id,
+        dish_id=dish_id
+    ).first()
+    
+    if existing_favorite:
+        return jsonify({"message": "Already favorited"}), 400
+        
+    favorite = Favorite(user_id=current_user_id, dish_id=dish_id)
+    db.session.add(favorite)
+    db.session.commit()
+    
+    return jsonify(favorite.serialize()), 201
+
+@api.route('/favorites/<int:dish_id>', methods=['DELETE'])
+@jwt_required()
+def remove_favorite(dish_id):
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+        
+    favorite = Favorite.query.filter_by(
+        user_id=current_user_id,
+        dish_id=dish_id
+    ).first()
+    
+    if not favorite:
+        return jsonify({"message": "Favorite not found"}), 404
+        
+    db.session.delete(favorite)
+    db.session.commit()
+    
+    return jsonify({"message": "Favorite removed"}), 200

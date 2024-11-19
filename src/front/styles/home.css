@@ -11,7 +11,7 @@
 }
 
 .btn-outline-light {
-    border-color: antiquewhite;
+    color: burlywood;
     color: antiquewhite;
 }
 
@@ -20,7 +20,12 @@
 }
 
 .placeholder-for-menu {
-    color: bisque;
-    padding-top: 5rem;
-    padding-bottom: 5rem;
+    color: burlywood;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.menu ul {
+    list-style-type: none;
+    padding-left: 0;
 }

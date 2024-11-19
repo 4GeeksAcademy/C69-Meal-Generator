@@ -5,6 +5,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			user: JSON.parse(localStorage.getItem("currentUser")) || null,
 			userRestrictions: JSON.parse(localStorage.getItem("userRestrictions")) || null,
 			userPreferences: JSON.parse(localStorage.getItem("userPreferences")) || null,
+			favorites: [],
 		},
 		actions: {
 			signup: async (email, password, firstName, lastName) => {
@@ -43,6 +44,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (response.status === 200) {
 						localStorage.setItem('token', data.token);
 						localStorage.setItem("currentUser", JSON.stringify(data.user))
+						setStore({ 
+							token: data.token,
+							user: data.user 
+						});
 						console.log("currentUser from flux:", JSON.stringify(data.user))
 						return true;
 					} else if (response.status === 401) {
@@ -264,16 +269,148 @@ const getState = ({ getStore, getActions, setStore }) => {
 					return { success: false, error: "error updating preferences" }
 				}
 			},
+			getFavorites: async () => {
+				const store = getStore();
+				if (!store.token) return;
+				
+				try {
+					const resp = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
+						headers: { 
+							"Authorization": `Bearer ${store.token}`
+						}
+					});
+					if (resp.ok) {
+						const data = await resp.json();
+						setStore({ favorites: data });
+					}
+				} catch (error) {
+					console.error("Error loading favorites:", error);
+				}
+			},
+
+			toggleFavorite: async (dishId) => {
+				const store = getStore();
+				if (!store.token) {
+					alert("Please log in to save favorites");
+					return false;
+				}
+
+				const isFavorite = store.favorites.some(fav => fav.dish_id === dishId);
+				
+				try {
+					let resp;
+					if (isFavorite) {
+						resp = await fetch(`${process.env.BACKEND_URL}/api/favorites/${dishId}`, {
+							method: 'DELETE',
+							headers: {
+								"Authorization": `Bearer ${store.token}`
+							}
+						});
+					} else {
+						resp = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
+							method: 'POST',
+							headers: {
+								"Content-Type": "application/json",
+								"Authorization": `Bearer ${store.token}`
+							},
+							body: JSON.stringify({ dish_id: dishId })
+						});
+					}
+
+					if (resp.ok) {
+						const favorites = store.favorites.filter(fav => fav.dish_id !== dishId);
+						if (!isFavorite) {
+							const data = await resp.json();
+							favorites.push(data);
+						}
+						setStore({ favorites });
+						return true;
+					}
+				} catch (error) {
+					console.error("Error toggling favorite:", error);
+				}
+				return false;
+			},
+			getFavorites: async () => {
+				const store = getStore();
+				if (!store.token) return;
+				
+				try {
+					const resp = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
+						headers: { 
+							"Authorization": `Bearer ${store.token}`
+						}
+					});
+					if (resp.ok) {
+						const data = await resp.json();
+						setStore({ favorites: data });
+					}
+				} catch (error) {
+					console.error("Error loading favorites:", error);
+				}
+			},
+
+			toggleFavorite: async (dishId) => {
+				const store = getStore();
+				if (!store.token) {
+					alert("Please log in to save favorites");
+					return false;
+				}
+
+				const isFavorite = store.favorites.some(fav => fav.dish_id === dishId);
+				
+				try {
+					let resp;
+					if (isFavorite) {
+						resp = await fetch(`${process.env.BACKEND_URL}/api/favorites/${dishId}`, {
+							method: 'DELETE',
+							headers: {
+								"Authorization": `Bearer ${store.token}`
+							}
+						});
+					} else {
+						resp = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
+							method: 'POST',
+							headers: {
+								"Content-Type": "application/json",
+								"Authorization": `Bearer ${store.token}`
+							},
+							body: JSON.stringify({ dish_id: dishId })
+						});
+					}
+
+					if (resp.ok) {
+						const favorites = store.favorites.filter(fav => fav.dish_id !== dishId);
+						if (!isFavorite) {
+							const data = await resp.json();
+							favorites.push(data);
+						}
+						setStore({ favorites });
+						return true;
+					}
+				} catch (error) {
+					console.error("Error toggling favorite:", error);
+				}
+				return false;
+			},
 
 
 			logout: () => {
 				localStorage.removeItem("token");
+				localStorage.removeItem("jwt-token");
 				localStorage.removeItem("currentUser");
 				localStorage.removeItem("userRestrictions");
-				setStore({ token: null, user: null, userRestrictions: null });
+				localStorage.removeItem("userPreferences");
+				localStorage.removeItem("favorites")
+
+				// Or alternatively, use clear() to remove everything
+				// localStorage.clear();
+
+				setStore({ token: null, user: null, userRestrictions: null, userPreferences: null, favorites: null});
 			},
 		},
 	};
 }
 
 export default getState
+

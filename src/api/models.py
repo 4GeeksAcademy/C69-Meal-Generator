@@ -4,6 +4,31 @@ from sqlalchemy.sql import func
 
 db = SQLAlchemy()
 
+class Favorite(db.Model):
+    __tablename__ = "favorite"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=func.now())
+    
+    # Relationships
+    user = db.relationship("User", back_populates="favorites")
+    dish = db.relationship("Dish", back_populates="favorited_by")
+    
+    def __repr__(self):
+        return f'<Favorite {self.user_id}:{self.dish_id}>'
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "dish_id": self.dish_id,
+            "created_at": self.created_at.isoformat(),
+            "dish": self.dish.serialize()
+        }
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
@@ -14,6 +39,8 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     # ingredient_restrictions = db.relationship('Ingredient', secondary="restriction", back_populates="restricted_by_users")
     # ingredient_preferences = db.relationship('Ingredient', secondary="preference", back_populates="preferred_by_users")
+
+    favorites = db.relationship("Favorite", back_populates="user", cascade="all, delete-orphan")
     
 
     def __repr__(self):
@@ -87,6 +114,7 @@ class UserPreferences(db.Model):
     lactose_intolerance = db.Column(db.Boolean, default=False, nullable=True)
     soy_free = db.Column(db.Boolean, default=False, nullable=True)
     low_sodium = db.Column(db.Boolean, default=False, nullable=True)
+    kosher = db.Column(db.Boolean, default=False, nullable=True)
     user = db.relationship("User", backref="preferences")
 
     def __repr__(self):
@@ -107,7 +135,8 @@ class UserPreferences(db.Model):
               "carnivore": self.carnivore,
               "lactose_intolerance": self.lactose_intolerance,
               "soy_free": self.soy_free,
-              "low_sodium": self.low_sodium
+              "low_sodium": self.low_sodium,
+              "kosher": self.kosher
 
          }
 
@@ -163,6 +192,8 @@ class Dish(db.Model):
     ingredients = db.relationship('Ingredient', secondary="dish_ingredient", back_populates="dishes", order_by="DishIngredient.ingredient_order")
     restriction = db.relationship('Restriction', uselist=False, backref="dish", lazy='joined')
     preference = db.relationship('Preference', uselist=False, backref="dish", lazy='joined')
+    favorited_by = db.relationship("Favorite", back_populates="dish", cascade="all, delete-orphan")
+
 
     def __repr__(self):
         return f'<Dish {self.name}:>'
@@ -189,8 +220,6 @@ class Ingredient(db.Model):
     name = db.Column(db.String(120), unique=True, nullable=False)
     calories = db.Column(db.Float(precision=2),unique=False, nullable=True)
     dishes = db.relationship('Dish', secondary="dish_ingredient", back_populates="ingredients")
-    # restricted_by_users = db.relationship('User', secondary='restriction', back_populates="ingredient_restrictions")
-    # preferred_by_users = db.relationship('User', secondary="preference", back_populates="ingredient_preferences")
     # add protein
 
     def __repr__(self):
@@ -219,8 +248,6 @@ class Restriction(db.Model):
     __tablename__ = "restriction"
 
     id = db.Column(db.Integer, primary_key=True)
-    # user_id =db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
-    # ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
     dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
     dairy = db.Column(db.Boolean, default=False, nullable=True)
     eggs = db.Column(db.Boolean, default=False, nullable=True)
@@ -261,8 +288,6 @@ class Preference(db.Model):
     __tablename__ = "preference"
 
     id = db.Column(db.Integer, primary_key=True)
-    #  user_id =db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
-    #  ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
     dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
     no_raw_fish = db.Column(db.Boolean, default=False, nullable=True)
     vegan = db.Column(db.Boolean, default=False, nullable=True)
@@ -276,6 +301,9 @@ class Preference(db.Model):
     lactose_intolerance = db.Column(db.Boolean, default=False, nullable=True)
     soy_free = db.Column(db.Boolean, default=False, nullable=True)
     low_sodium = db.Column(db.Boolean, default=False, nullable=True)
+    kosher = db.Column(db.Boolean, default=False, nullable=True)
+
+    
 
     def __repr__(self):
             return f'<Preferences {self.id}:>'
@@ -295,7 +323,8 @@ class Preference(db.Model):
               "carnivore": self.carnivore,
               "lactose_intolerance": self.lactose_intolerance,
               "soy_free": self.soy_free,
-              "low_sodium": self.low_sodium
+              "low_sodium": self.low_sodium,
+              "kosher": self.kosher
 
          }
     
