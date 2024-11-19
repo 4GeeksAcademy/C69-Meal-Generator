@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
+import "../../styles/menu.css";
 
 export const Menu = (props) => {
     const {store, actions} = useContext(Context)
@@ -18,24 +19,26 @@ export const Menu = (props) => {
     }
 
     return (
-        <div>
+        <div className="full-menu">
             {(!menuType || !dishes.length) && (<div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>)}
             {(!!menuType && !!dishes.length) && (
                 <>
                     <h1>{menuType} Menu</h1>
-                    <ul>
+                    <ul className="menu">
                         {dishes.map(dish => (
-                            <li key={dish.id}>
+                            <li className="dish mb-3" key={dish.id}>
+                                <div className="d-flex align-items-center justify-content-center ">
+                                <h2 className="dish-name mb-0">{dish.name}</h2>
                                 <button 
-                                    className="btn btn-light"
+                                    className="btn btn-sm ms-2 btn-light"
                                     onClick={() => handleFavorites(dish.id)}
                                 >
                                     <i className={`fa-${isFavorite(dish.id) ? 'solid' : 'regular'} fa-star`} />
                                 </button>
-                                <h2>{dish.name}</h2>
-                                <div>
+                                </div>
+                                <div className="ingredients">
                                     {dish.ingredients.map(ingredient => ingredient.name).join(', ')}
                                 </div>
                             </li>
