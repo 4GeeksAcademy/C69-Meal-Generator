@@ -17,7 +17,7 @@ export const ForgotPassword = () => {
             return;
         }
 
-        const response = await actions.ForgotPassword(email);
+        const response = await actions.forgotPassword(email);
 
         if (response) {
             navigate('/');

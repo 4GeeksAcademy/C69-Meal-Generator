@@ -57,7 +57,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			ForgotPassword: async (email) => {
+			forgotPassword: async (email) => {
 				try {
 
 					const response = await fetch(process.env.BACKEND_URL + '/forgot-password', {
@@ -80,6 +80,42 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error('Error during forgot password request', error);
 				}
 			},
+
+			resetPassword: async (email, password) => {
+                try {
+                    // Get the token from the URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const token = urlParams.get('token');
+
+                    if (!token) {
+                        console.error('Reset token not found in URL');
+                        return false;
+                    }
+
+                    const response = await fetch(`${process.env.BACKEND_URL}/reset-password`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            token: token,
+                            password: password
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        return true;
+                    } else {
+                        console.error('Password reset failed:', data.msg);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error during password reset:', error);
+                    return false;
+                }
+            },
 
 			userProfile: async () => {
 				try {

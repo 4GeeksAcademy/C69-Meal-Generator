@@ -273,28 +273,35 @@ def handle_forgot_password():
         print(f"Error in forgot password route: {str(e)}")
         return jsonify({'msg': 'An error occurred. Please try again later.'}), 500
 
-@api.route('/reset-password', methods= ['POST'])
+@api.route('/reset-password', methods=['POST'])
 def handle_reset_password():
-    token = request.json.get('token', None)
-    if not token:
-        return jsonify({'msg':'Token is required'}), 400
     try:
-        user_id = decode_token(token)
-    except Exception:
-        return jsonify({'msg': 'Invalid or expired token'}), 400
-    
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({'msg':'Invalid token or user not found'}), 404
-    
-    password = request.json.get('password', None)
-    
-    hashed_password = generate_password_hash(password)
-    user.password = hashed_password
-    
-    db.session.commit()
+        token = request.json.get('token', None)
+        password = request.json.get('password', None)
 
-    return jsonify({'msg': 'Your password has been successfully reset'}), 200
+        if not token or not password:
+            return jsonify({'msg': 'Token and password are required'}), 400
+
+        # Decode the token and get the user identity
+        decoded_token = decode_token(token)
+        user_id = decoded_token['sub']  # 'sub' contains the user id
+
+        # Get the user
+        user = User.query.filter_by(id=user_id).first()
+        if not user:
+            return jsonify({'msg': 'Invalid token or user not found'}), 404
+
+        # Hash the new password and update
+        hashed_password = generate_password_hash(password)
+        user.password = hashed_password
+        
+        db.session.commit()
+
+        return jsonify({'msg': 'Your password has been successfully reset'}), 200
+
+    except Exception as e:
+        print(f"Error in reset password: {str(e)}")
+        return jsonify({'msg': 'Invalid or expired token'}), 400
 
 @api.route('/get-user-restrictions', methods= ['GET'])
 @jwt_required()
