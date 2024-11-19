@@ -274,7 +274,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				if (!store.token) return;
 				
 				try {
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
+					const resp = await fetch(`${process.env.BACKEND_URL}/favorites`, {
 						headers: { 
 							"Authorization": `Bearer ${store.token}`
 						}
@@ -300,14 +300,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 				try {
 					let resp;
 					if (isFavorite) {
-						resp = await fetch(`${process.env.BACKEND_URL}/api/favorites/${dishId}`, {
+						resp = await fetch(`${process.env.BACKEND_URL}/favorites/${dishId}`, {
 							method: 'DELETE',
 							headers: {
 								"Authorization": `Bearer ${store.token}`
 							}
 						});
 					} else {
-						resp = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
+						resp = await fetch(`${process.env.BACKEND_URL}/favorites`, {
 							method: 'POST',
 							headers: {
 								"Content-Type": "application/json",
@@ -331,69 +331,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 				return false;
 			},
-			getFavorites: async () => {
-				const store = getStore();
-				if (!store.token) return;
-				
-				try {
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
-						headers: { 
-							"Authorization": `Bearer ${store.token}`
-						}
-					});
-					if (resp.ok) {
-						const data = await resp.json();
-						setStore({ favorites: data });
-					}
-				} catch (error) {
-					console.error("Error loading favorites:", error);
-				}
-			},
-
-			toggleFavorite: async (dishId) => {
-				const store = getStore();
-				if (!store.token) {
-					alert("Please log in to save favorites");
-					return false;
-				}
-
-				const isFavorite = store.favorites.some(fav => fav.dish_id === dishId);
-				
-				try {
-					let resp;
-					if (isFavorite) {
-						resp = await fetch(`${process.env.BACKEND_URL}/api/favorites/${dishId}`, {
-							method: 'DELETE',
-							headers: {
-								"Authorization": `Bearer ${store.token}`
-							}
-						});
-					} else {
-						resp = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
-							method: 'POST',
-							headers: {
-								"Content-Type": "application/json",
-								"Authorization": `Bearer ${store.token}`
-							},
-							body: JSON.stringify({ dish_id: dishId })
-						});
-					}
-
-					if (resp.ok) {
-						const favorites = store.favorites.filter(fav => fav.dish_id !== dishId);
-						if (!isFavorite) {
-							const data = await resp.json();
-							favorites.push(data);
-						}
-						setStore({ favorites });
-						return true;
-					}
-				} catch (error) {
-					console.error("Error toggling favorite:", error);
-				}
-				return false;
-			},
-
 
 			logout: () => {
 				localStorage.removeItem("token");
