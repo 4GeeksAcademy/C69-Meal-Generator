@@ -10,7 +10,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 		actions: {
 			signup: async (email, password, firstName, lastName) => {
 				try {
-					const response = await fetch(process.env.BACKEND_URL + '/api/sign-up', {
+					const response = await fetch(process.env.BACKEND_URL + '/signup', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({
@@ -30,7 +30,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			login: async (email, password) => {
 				try {
-					const response = await fetch(process.env.BACKEND_URL + '/api/log-in', {
+					const response = await fetch(process.env.BACKEND_URL + '/login', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({
@@ -40,7 +40,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						})
 					})
 					const data = await response.json();
-					// localStorage.setItem('jwt-token', data.token);
+					localStorage.setItem('jwt-token', data.token);
 					if (response.status === 200) {
 						localStorage.setItem('token', data.token);
 						localStorage.setItem("currentUser", JSON.stringify(data.user))
@@ -62,11 +62,71 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			forgotPassword: async (email) => {
+				try {
+
+					const response = await fetch(process.env.BACKEND_URL + '/forgot-password', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ email }),
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						alert(`Error: ${errorData.msg}`);
+						return;
+					}
+
+					const data = await response.json();
+					alert('An email has been sent with password reset instructions.');
+				} catch (error) {
+					console.error('Error during forgot password request', error);
+				}
+			},
+
+			resetPassword: async (email, password) => {
+                try {
+                    // Get the token from the URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const token = urlParams.get('token');
+
+                    if (!token) {
+                        console.error('Reset token not found in URL');
+                        return false;
+                    }
+
+                    const response = await fetch(`${process.env.BACKEND_URL}/reset-password`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            token: token,
+                            password: password
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        return true;
+                    } else {
+                        console.error('Password reset failed:', data.msg);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error during password reset:', error);
+                    return false;
+                }
+            },
+
 			userProfile: async () => {
 				try {
 					const token = localStorage.getItem('jwt-token');
 
-					const resp = await fetch(process.env.BACKEND_URL + '/api/private', {
+					const resp = await fetch(process.env.BACKEND_URL + '/private', {
 						method: 'GET',
 						headers: {
 							"Content-Type": 'application/json',
@@ -94,10 +154,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const store = getStore();
 				if (!store.token) return;
 				try {
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/get-user-restrictions`, {
-						headers: { "Authorization": `Bearer ${store.token}`}
+					const resp = await fetch(`${process.env.BACKEND_URL}/get-user-restrictions`, {
+						headers: { "Authorization": `Bearer ${store.token}` }
 					});
-					if(resp.ok) {
+					if (resp.ok) {
 						const data = await resp.json();
 
 						const formattedRestrictions = {};
@@ -111,7 +171,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						});
 
 						localStorage.setItem("userRestrictions", JSON.stringify(formattedRestrictions));
-						setStore({ userRestrictions: formattedRestrictions});
+						setStore({ userRestrictions: formattedRestrictions });
 						return formattedRestrictions;
 					}
 				} catch (error) {
@@ -129,7 +189,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				});
 
 				try {
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/edit-user-restrictions`, {
+					const resp = await fetch(`${process.env.BACKEND_URL}/edit-user-restrictions`, {
 						method: 'PUT',
 						headers: {
 							"Content-Type": "application/json",
@@ -140,13 +200,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if (resp.ok) {
 						localStorage.setItem("userRestrictions", JSON.stringify(restrictions));
-						setStore({ userRestrictions: restrictions});
-						return {success: true};
+						setStore({ userRestrictions: restrictions });
+						return { success: true };
 					}
-					return { success: false, error: "failed to update restrictions"};
+					return { success: false, error: "failed to update restrictions" };
 				} catch (error) {
 					console.error("error updating user restrictions:", error);
-					return {success: false, error: "error updating restrictions"}
+					return { success: false, error: "error updating restrictions" }
 				}
 			},
 
@@ -154,10 +214,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const store = getStore();
 				if (!store.token) return;
 				try {
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/get-user-preferences`, {
-						headers: { "Authorization": `Bearer ${store.token}`}
+					const resp = await fetch(`${process.env.BACKEND_URL}/get-user-preferences`, {
+						headers: { "Authorization": `Bearer ${store.token}` }
 					});
-					if(resp.ok) {
+					if (resp.ok) {
 						const data = await resp.json();
 
 						const formattedPreferences = {};
@@ -171,7 +231,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						});
 
 						localStorage.setItem("userPreferences", JSON.stringify(formattedPreferences));
-						setStore({ userPreferences: formattedPreferences});
+						setStore({ userPreferences: formattedPreferences });
 						return formattedPreferences;
 					}
 				} catch (error) {
@@ -189,7 +249,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				});
 
 				try {
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/edit-user-preferences`, {
+					const resp = await fetch(`${process.env.BACKEND_URL}/edit-user-preferences`, {
 						method: 'PUT',
 						headers: {
 							"Content-Type": "application/json",
@@ -200,13 +260,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if (resp.ok) {
 						localStorage.setItem("userPreferences", JSON.stringify(preferences));
-						setStore({ userPreferences: preferences});
-						return {success: true};
+						setStore({ userPreferences: preferences });
+						return { success: true };
 					}
-					return { success: false, error: "failed to update preferences"};
+					return { success: false, error: "failed to update preferences" };
 				} catch (error) {
 					console.error("error updating user preferences:", error);
-					return {success: false, error: "error updating preferences"}
+					return { success: false, error: "error updating preferences" }
 				}
 			},
 			getFavorites: async () => {
@@ -214,7 +274,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				if (!store.token) return;
 				
 				try {
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
+					const resp = await fetch(`${process.env.BACKEND_URL}/favorites`, {
 						headers: { 
 							"Authorization": `Bearer ${store.token}`
 						}
@@ -240,14 +300,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 				try {
 					let resp;
 					if (isFavorite) {
-						resp = await fetch(`${process.env.BACKEND_URL}/api/favorites/${dishId}`, {
+						resp = await fetch(`${process.env.BACKEND_URL}/favorites/${dishId}`, {
 							method: 'DELETE',
 							headers: {
 								"Authorization": `Bearer ${store.token}`
 							}
 						});
 					} else {
-						resp = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
+						resp = await fetch(`${process.env.BACKEND_URL}/favorites`, {
 							method: 'POST',
 							headers: {
 								"Content-Type": "application/json",
@@ -272,7 +332,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 				return false;
 			},
 
-			
 			logout: () => {
 				localStorage.removeItem("token");
 				localStorage.removeItem("jwt-token");

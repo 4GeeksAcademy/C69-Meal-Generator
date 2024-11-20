@@ -35,7 +35,7 @@ export const Home = () => {
 
 	const fetchMenus = async () => {
 		try {
-			const menus = await fetch(`${process.env.BACKEND_URL}/api/menu`)
+			const menus = await fetch(`${process.env.BACKEND_URL}/menu`)
 				.then((result) => result.json());
 			return menus;
 		} catch (err) {
@@ -136,7 +136,7 @@ export const Home = () => {
 
 	const fetchMenuDishes = async (menuId) => {
 		try {
-			const response = await fetch(`${process.env.BACKEND_URL}/api/menu/${menuId}/dish`);
+			const response = await fetch(`${process.env.BACKEND_URL}/menu/${menuId}/dish`);
 			const resData = await response.json();
 			
 			if (resData.data) {

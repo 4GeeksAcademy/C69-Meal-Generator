@@ -17,14 +17,12 @@ export const ForgotPassword = () => {
             return;
         }
 
-        const response = await actions.ForgotPassword(email);
+        const response = await actions.forgotPassword(email);
 
         if (response) {
             navigate('/');
             alert("Please check your email for your reset password link.")
-        } else {
-            alert("We were not able to send you a reset email at this time. Please try again later.")
-        }
+        } 
 
     }
     return (

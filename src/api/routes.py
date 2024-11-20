@@ -8,9 +8,13 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, decode_token, JWTManager
-from api.email_util import send_reset_email
+from api.email_utils import send_reset_email
+
+
+app = Flask(__name__)
 
 api = Blueprint('api', __name__)
+
 
 # Allow CORS requests to this API
 CORS(api)
@@ -193,7 +197,7 @@ def handle_ingredient_order(dish_id, ingredient_id):
     
 
 
-@api.route('/sign-up', methods=['POST'])
+@api.route('/signup', methods=['POST'])
 def handle_sign_up():
     email = request.json.get('email', None)
     password = request.json.get('password', None)
@@ -210,7 +214,7 @@ def handle_sign_up():
 
     return jsonify({'msg':'User created successfully'}), 201
 
-@api.route('/log-in', methods=['POST'])
+@api.route('/login', methods=['POST'])
 def handle_log_in():
     email = request.json.get('email', None)
     password = request.json.get('password', None)
@@ -232,6 +236,21 @@ def private_route():
     
     return jsonify(logged_in_as = current_user), 200
     
+# @api.route('/forgot-password', methods=['POST'])
+# def handle_forgot_password():
+#     email = request.json.get('email', None)
+#     if not email:
+#         return jsonify({'msg': 'Email is required'}), 400
+
+#     user = User.query.filter_by(email=email).first()
+
+#     if user:
+#         expiration_delta = datetime.timedelta(minutes=30)
+#         reset_token = create_access_token(identity=user.id, expires_delta=expiration_delta)
+#         send_reset_email(user.email, reset_token)
+
+#     return jsonify({'msg': 'Please check your email to reset your password'}), 200
+
 @api.route('/forgot-password', methods=['POST'])
 def handle_forgot_password():
     email = request.json.get('email', None)
@@ -239,37 +258,50 @@ def handle_forgot_password():
         return jsonify({'msg': 'Email is required'}), 400
 
     user = User.query.filter_by(email=email).first()
+    if not user:
+        # Still return success to prevent email enumeration
+        return jsonify({'msg': 'If an account exists with this email, you will receive reset instructions'}), 200
 
-    if user:
+    try:
         expiration_delta = datetime.timedelta(minutes=30)
         reset_token = create_access_token(identity=user.id, expires_delta=expiration_delta)
-        send_reset_email(user.email, reset_token)
+        if send_reset_email(user.email, reset_token):
+            return jsonify({'msg': 'Password reset instructions have been sent to your email'}), 200
+        else:
+            return jsonify({'msg': 'Error sending email. Please try again later.'}), 500
+    except Exception as e:
+        print(f"Error in forgot password route: {str(e)}")
+        return jsonify({'msg': 'An error occurred. Please try again later.'}), 500
 
-    return jsonify({'msg': 'Please check your email to reset your password'}), 200
-
-
-@api.route('/reset-password', methods= ['POST'])
+@api.route('/reset-password', methods=['POST'])
 def handle_reset_password():
-    token = request.json.get('token', None)
-    if not token:
-        return jsonify({'msg':'Token is required'}), 400
     try:
-        user_id = decode_token(token)
-    except Exception:
-        return jsonify({'msg': 'Invalid or expired token'}), 400
-    
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({'msg':'Invalid token or user not found'}), 404
-    
-    password = request.json.get('password', None)
-    
-    hashed_password = generate_password_hash(password)
-    user.password = hashed_password
-    
-    db.session.commit()
+        token = request.json.get('token', None)
+        password = request.json.get('password', None)
 
-    return jsonify({'msg': 'Your password has been successfully reset'}), 200
+        if not token or not password:
+            return jsonify({'msg': 'Token and password are required'}), 400
+
+        # Decode the token and get the user identity
+        decoded_token = decode_token(token)
+        user_id = decoded_token['sub']  # 'sub' contains the user id
+
+        # Get the user
+        user = User.query.filter_by(id=user_id).first()
+        if not user:
+            return jsonify({'msg': 'Invalid token or user not found'}), 404
+
+        # Hash the new password and update
+        hashed_password = generate_password_hash(password)
+        user.password = hashed_password
+        
+        db.session.commit()
+
+        return jsonify({'msg': 'Your password has been successfully reset'}), 200
+
+    except Exception as e:
+        print(f"Error in reset password: {str(e)}")
+        return jsonify({'msg': 'Invalid or expired token'}), 400
 
 @api.route('/get-user-restrictions', methods= ['GET'])
 @jwt_required()

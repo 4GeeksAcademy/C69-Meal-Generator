@@ -24,7 +24,7 @@ export const ResetPassword = () => {
             return;
         }
 
-        const response = await actions.resetPassword (email, password);
+        const response = await actions.resetPassword(email, password);
 
         if (response) {
             alert('Password has been reset');
