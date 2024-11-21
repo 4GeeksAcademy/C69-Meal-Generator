@@ -25,20 +25,19 @@ export const Menu = (props) => {
             </div>)}
             {(!!menuType && !!dishes.length) && (
                 <>
-                    <h1>{menuType} Menu</h1>
-                    <ul className="menu">
+                    <ul className="menu py-1">
                         {dishes.map(dish => (
                             <li className="dish mb-3" key={dish.id}>
-                                <div className="d-flex align-items-center justify-content-center ">
+                                <div className="name-of-dish d-flex align-items-center justify-content-center">
                                 <h2 className="dish-name mb-0">{dish.name}</h2>
                                 <button 
-                                    className="btn btn-sm ms-2 btn-light"
+                                    className="favorites-button btn btn-sm ms-2 btn-light"
                                     onClick={() => handleFavorites(dish.id)}
                                 >
-                                    <i className={`fa-${isFavorite(dish.id) ? 'solid' : 'regular'} fa-star`} />
+                                    <i className={`fa-${isFavorite(dish.id) ? 'solid' : 'regular'} fa-heart`} />
                                 </button>
                                 </div>
-                                <div className="ingredients">
+                                <div className="ingredients container pt-1 pd">
                                     {dish.ingredients.map(ingredient => ingredient.name).join(', ')}
                                 </div>
                             </li>

@@ -223,15 +223,17 @@ export const Home = () => {
 
 	return (
 		<div className="overallWebsite text-center">
+			<div className="japanese-saying p-3">						<p>There's a Japanese saying "笑う門には福来たる" (warau kado niwa fuku kitaru) which means "good fortune/happiness comes to those who smile/laugh." On that note...</p>
+			</div>
 			<div className="joke"> 
 				{joke && (
 					<div>
-						<p>There's a Japanese saying "笑う門には福来たる" (warau kado niwa fuku kitaru) which means "good fortune/happiness comes to those who smile/laugh." On that note...</p>
 						<p>{joke.setup}</p>
 						<p><em>{joke.punchline}</em></p>
 					</div>
 				)}
 			</div>
+			<h1 className="menus">MENU</h1>
 			<p className="toggle-menu-buttons d-inline-flex gap">
 				<button
 					type="button"
@@ -241,7 +243,7 @@ export const Home = () => {
 					aria-pressed="true"
 					onClick={() => populateMenu(menus, "Brunch")}
 				>
-					Brunch Menu
+					Brunch
 				</button>
 				<button
 					type="button"
@@ -251,11 +253,10 @@ export const Home = () => {
 					aria-pressed="true"
 					onClick={() => populateMenu(menus, "Dinner")}
 				>
-					Dinner Menu
+					Dinner
 				</button>
 			</p>
 			<div className="menu text-center">
-				<h1 className="placeholder-for-menu">MENU</h1>
 				{error && <p className="text-danger">{error}</p>}
 				{isLoading ? (
 					<div className="spinner-border text-light" role="status">
