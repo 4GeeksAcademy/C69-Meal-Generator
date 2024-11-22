@@ -114,3 +114,11 @@ input:checked+.slider .off {
 .fav-div .btn-link:hover {
   transform: scale(1.1);
 }
+
+.fa-trash {
+  color: white
+}
+
+.fa-trash:hover {
+  color: red
+}
