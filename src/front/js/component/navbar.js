@@ -2,7 +2,9 @@ import React, {useContext} from "react";
 import { Context } from "../store/appContext";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/navbar.css"
-import towaLogo from "../../img/towa-logo.png"
+import towaLogo from "../../img/towa-logo.png";
+import mealGenieLogo from "../../img/meal-genie-logo.jpg"
+
 
 export const Navbar = () => {
 	const {store, actions} = useContext(Context);
@@ -18,7 +20,7 @@ export const Navbar = () => {
 		<nav className="navbar navbar-light d-flex">
 			<div className="logo px-3 col-8 d-flex">
 				<Link to="/">
-					<img className="towaLogo" src={towaLogo} />
+					<img className="mealGenieLogo" src={mealGenieLogo} /> <img className="towaLogo" src={towaLogo} />
 				</Link>
 			</div>
 			{isLoggedIn ? (
